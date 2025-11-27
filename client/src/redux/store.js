@@ -26,7 +26,7 @@ import storage from "redux-persist/lib/storage"; // localStorage
 import { vendorApi } from "./apis/vendorApi";
 import { orderApi } from "./apis/orderApi";
 import vendorSlice from "./slices/vendorSlice";
-import { attendanceApi } from "./apis/AttendanceApi";
+import { attendanceApi } from "./apis/attendance.js";
 import { categoriesApi } from "./apis/categoriesApi";
 import { offerApi } from "./apis/offerApi";
 import { reviewApi } from "./apis/reviewApi";

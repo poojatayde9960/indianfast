@@ -6,7 +6,7 @@ import veg from "/veg.png";
 import NewOrderRequests from "./NewOrderRequests";
 import { useGetOrderByShopIdQuery } from "../../redux/apis/orderApi";
 import { useDispatch, useSelector } from "react-redux";
-import { useToggleAvailabilityMutation } from "../../redux/apis/AttendanceApi";
+import { useToggleAvailabilityMutation } from "../../redux/apis/attendance";
 import { setActive, setCheckInTime } from "../../redux/slices/vendorSlice";
 
 const Dashboard = () => {
