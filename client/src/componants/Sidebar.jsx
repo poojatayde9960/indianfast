@@ -381,11 +381,20 @@ const Sidebar = ({ setPageTitle }) => {
             </div>
 
             {/* 🔹 Overlay */}
-            {isOpen && (
+            {/* {isOpen && (
                 <div
                     className="fixed inset-0 bg-black bg-opacity-20 backdrop-blur-sm z-30 sm:hidden"
                     onClick={() => setIsOpen(false)}
                 ></div>
+            )} */}
+
+
+
+            {isOpen && (
+                <div
+                    className="fixed inset-0 z-30 sm:hidden"
+                    onClick={() => setIsOpen(false)}
+                />
             )}
         </>
     );

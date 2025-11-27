@@ -65,7 +65,9 @@ const Layout = () => {
         <div className="flex flex-col h-screen overflow-hidden">
             <Navbar title={pageTitle} searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
             <div className="flex flex-1 items-stretch overflow-hidden">
-                <Sidebar setPageTitle={setPageTitle} />
+                <div className="">
+                    <Sidebar setPageTitle={setPageTitle} />
+                </div>
                 <div className="flex-1 bg-white overflow-auto">
                     {/* ✅ Pass context here */}
                     {/* <Outlet context={{ setPageTitle }} /> */}

@@ -110,7 +110,7 @@ const NewOrderRequests = () => {
                                     </div>
 
                                     <div>
-                                        <h4 className="text-[16px] sm:text-[18px] text-[#808080]">
+                                        <h4 className="text-[16px] sm:text-[18px] sm:mt-3 text-[#808080]">
                                             Order Request From
                                         </h4>
                                         <span className="text-[#000000] text-[18px] sm:text-[20px] font-semibold">
@@ -129,27 +129,25 @@ const NewOrderRequests = () => {
                                 </p>
 
                                 {/* PRODUCT LIST */}
-                                <div className="mt-3 text-[14px]">
-                                    {order.services?.map((service) =>
-                                        service.products?.map((product, pIndex) => (
-                                            <p
+                                {/* PRODUCT LIST - Horizontal Single Line with Scroll if needed */}
+                                <div className="mt-3">
+                                    <div className="flex items-center gap-6 overflow-x-auto pb-1 scrollbar-hide">
+                                        {order.services?.[0]?.products?.map((product, pIndex) => (
+                                            <div
                                                 key={pIndex}
-                                                className="flex justify-between w-full sm:w-[220px] 
-                                                items-center mt-3 font-semibold text-[#000000]"
+                                                className="flex items-center gap-2 flex-shrink-0 text-[#000000] font-semibold whitespace-nowrap"
                                             >
-                                                <img src={veg} alt="veg" className="w-4 h-4" />
-
-                                                <span className="mr-3 text-[15px]  sm:text-lg">
+                                                <img src={veg} alt="veg" className="w-4 h-4 flex-shrink-0" />
+                                                <span className="text-[15px] sm:text-[16px]">
                                                     {product.productName}{" "}
-                                                    <span className="text-[#00000099]">x{product.quantity}</span>
+                                                    <span className="text-[#00000099] font-medium">x{product.quantity}</span>
                                                 </span>
-
-                                                <span className="text-[14px]  dm-sans  sm:text-[15px] text-[#00000099]">
+                                                <span className="text-[15px] text-[#00000099]">
                                                     ₹{product.total}/-
                                                 </span>
-                                            </p>
-                                        ))
-                                    )}
+                                            </div>
+                                        ))}
+                                    </div>
                                 </div>
                             </div>
 
