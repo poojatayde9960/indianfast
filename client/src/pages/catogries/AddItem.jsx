@@ -250,8 +250,8 @@ const AddItem = ({ searchTerm }) => {
 
                                     <td className="py-4 px-5 text-gray-600">{item.description}</td>
 
-                                    <td className={`py-4 px-5 font-medium ${item.available ? "text-green-600" : "text-red-600"}`}>
-                                        {item.available ? "Available" : "Not Available"}
+                                    <td className={`py-4 px-5 font-medium ${item.available === "Available" ? "text-green-600" : "text-red-600"}`}>
+                                        {item.available === "Available" ? "Available" : "Not Available"}
                                     </td>
 
                                     <td className="py-4 text-black px-5">{item.preparationTime} mins</td>
@@ -270,9 +270,9 @@ const AddItem = ({ searchTerm }) => {
                                             <button
                                                 onClick={() => productToggle(item._id)}
                                                 disabled={toggleLoading}
-                                                className={`relative w-9 h-5 rounded-full transition-all ${item.available ? "bg-black" : "bg-gray-400"} ${toggleLoading ? "opacity-50" : ""}`}
+                                                className={`relative w-9 h-5 rounded-full transition-all ${item.available === "Available" ? "bg-black" : "bg-gray-400"} ${toggleLoading ? "opacity-50" : ""}`}
                                             >
-                                                <span className={`absolute top-0.5 left-0.5 w-4 h-4 bg-orange-500 rounded-full transition-transform ${item.available ? "translate-x-4" : ""}`} />
+                                                <span className={`absolute top-0.5 left-0.5 w-4 h-4 bg-orange-500 rounded-full transition-transform ${item.available === "Available" ? "translate-x-4" : ""}`} />
                                             </button>
                                         </div>
                                     </td>

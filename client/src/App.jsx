@@ -17,6 +17,8 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import VendorProtected from "./share/vendorProtected";
 import Review from "./pages/Review";
+import "react-datepicker/dist/react-datepicker.css";
+import AttendanceTimer from "./pages/dashboad/AttendanceTimer";
 
 const App = () => {
   return (
@@ -53,6 +55,7 @@ const App = () => {
             <Route path="review" element={<Review />} />
             <Route path="coupons" element={<Coupons />} />
             <Route path="personalDetails" element={<PersonalDetails />} />
+            <Route path="attendanceTimer" element={<AttendanceTimer />} />
             <Route path="approved-banners" element={<SeeApprovedBanners />} />
           </Route>
 

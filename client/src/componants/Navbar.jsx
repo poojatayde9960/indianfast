@@ -4,12 +4,28 @@ import img1 from "/img1.png";
 import techsurya from "/techsurya.png";
 import { useLocation } from "react-router-dom";
 import { useGetProfileQuery, useVendorLogoutMutation } from "../redux/apis/vendorApi";
-import { useSelector } from "react-redux";
-
-
+import { useDispatch, useSelector } from "react-redux";
+import { logout } from "../redux/slices/vendorSlice";
+import { useNavigate } from "react-router-dom";
+import { useGetToggleAvailabilityMutation } from "../redux/apis/attendance";
+// import { logout } from "../redux/slices/authSlice"; 
 
 const Navbar = ({ title, searchTerm, setSearchTerm }) => {
+    const [getToggleAvailability, { data: toggleData, isLoading: toggleIsLoading, error }] = useGetToggleAvailabilityMutation();
+    const handleToggleAvailability = async () => {
+        if (!shopId) return alert("Shop ID not found!");
 
+        try {
+            const result = await getToggleAvailability({ ShopId: shopId }).unwrap();
+            console.log("✅ Availability toggled:", result);
+        } catch (err) {
+            console.error("❌ Error toggling availability:", err);
+            alert(err?.data?.message || "Availability error");
+        }
+    };
+
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
     const [vendorLogout] = useVendorLogoutMutation()
     const handleLogout = async () => {
         try {

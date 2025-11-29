@@ -188,7 +188,7 @@ const NewOrderRequests = () => {
 
             {/* RIGHT SIDE – Recent Transactions */}
             {/* <pre className='text-black'>{JSON.stringify(data, null, 2)}</pre> */}
-            <div className="bg-white rounded-[20px] mt-4 lg:-mt-[34%] w-full lg:w-[85%] lg:ml-11 shadow-[0_4px_20px_rgba(0,0,0,0.08)] 
+            <div className="bg-white rounded-[20px] mt-4 lg:-mt-[40%] w-full lg:w-[85%] lg:ml-11 shadow-[0_4px_20px_rgba(0,0,0,0.08)] 
                 p-4 sm:p-5">
 
                 <h3 className="text-gray-700 font-semibold mb-5 sm:mb-8 text-lg sm:text-xl">

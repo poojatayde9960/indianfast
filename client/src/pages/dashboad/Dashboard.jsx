@@ -8,6 +8,7 @@ import { useGetOrderByShopIdQuery } from "../../redux/apis/orderApi";
 import { useDispatch, useSelector } from "react-redux";
 import { useToggleAvailabilityMutation } from "../../redux/apis/attendance";
 import { setActive, setCheckInTime } from "../../redux/slices/vendorSlice";
+import { IoIosArrowForward } from "react-icons/io";
 
 const Dashboard = () => {
     const { isActive = false, checkInTime = null, shopId = null } = useSelector(
@@ -194,7 +195,7 @@ const Dashboard = () => {
 
                 {/* Total Orders */}
                 <div
-                    onClick={() => navigate("/totalOrders")}
+                    onClick={() => navigate("/orders")}
                     className="cursor-pointer bg-white rounded-3xl h-36 shadow-[0_4px_20px_0_rgba(0,0,0,0.1)] p-5 flex flex-col justify-between hover:shadow-[0_8px_25px_rgba(0,0,0,0.2)] transition-shadow duration-300"
                 >
                     <div className="flex justify-between items-center">
@@ -210,7 +211,8 @@ const Dashboard = () => {
                 </div>
 
                 {/* Delivered Orders */}
-                <div className="bg-white rounded-3xl h-36 shadow-[0_4px_20px_0_rgba(0,0,0,0.1)] p-5 flex flex-col justify-between hover:shadow-[0_8px_25px_rgba(0,0,0,0.2)] transition-shadow duration-300">
+                <div onClick={() => navigate("/orders?tab=Completed")}
+                    className="bg-white rounded-3xl h-36 shadow-[0_4px_20px_0_rgba(0,0,0,0.1)] p-5 flex flex-col justify-between hover:shadow-[0_8px_25px_rgba(0,0,0,0.2)] transition-shadow duration-300">
                     <div className="flex justify-between items-center">
                         <h3 className="text-[#1E1E1E] text-[122%] font-Poppins mb-1">Delivered Orders</h3>
                         <div className="w-11 h-11 flex items-center justify-center rounded-full bg-[#3F922426]">
@@ -256,6 +258,7 @@ const Dashboard = () => {
                         <p className={`text-sm mt-1 transition-all duration-300 ${isActive ? "text-[#1E1E1E]" : "text-gray-500"}`}>
                             {isActive ? "Ready to accept orders" : "Turn on to start receiving orders"}
                         </p>
+
                     </div>
                     <button
                         onClick={handleToggleAvailability}
@@ -303,9 +306,14 @@ const Dashboard = () => {
                 <div className="bg-white w-full sm:w-[105%] md:w-[110%] rounded-xl sm:ml-1 shadow-[0_4px_20px_rgba(0,0,0,0.1)] p-6 flex flex-col items-center justify-center">
 
                     <h1 className="text-3xl font-bold dm-sans text-black">{duration}</h1>
-                    <p className="text-gray-600 mt-2 dm-sans">
-                        {checkInTime ? new Date(checkInTime).toLocaleDateString() : new Date().toLocaleDateString()}
-                    </p>
+                    <div className="flex items-center gap-2">
+                        <p className="text-gray-600 mt-2 dm-sans">
+                            {checkInTime ? new Date(checkInTime).toLocaleDateString() : new Date().toLocaleDateString()}
+                        </p>
+                        <div onClick={() => navigate("/attendanceTimer")} className="cursor-pointer">
+                            <IoIosArrowForward className="h-8 w-8 mt-1 text-black" />
+                        </div>
+                    </div>
                 </div>
             </div>
 

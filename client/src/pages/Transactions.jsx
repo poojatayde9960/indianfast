@@ -233,7 +233,7 @@ const Transactions = () => {
                     {showFilter && (
                         <div
                             ref={filterRef}
-                            className="absolute top-8 left-0 mt-2 bg-white shadow-xl p-4 z-50 w-56 rounded-lg"
+                            className="absolute top-8 left-0 md:-left-36 -mt-3 bg-white shadow-xl p-4 z-50 w-56 "
                         >
                             <div className="flex flex-col gap-3">
 

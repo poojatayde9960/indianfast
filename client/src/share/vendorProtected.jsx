@@ -17,3 +17,4 @@ const VendorProtected = ({ compo }) => {
 }
 
 export default VendorProtected
+// Dataincript
