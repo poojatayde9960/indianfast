@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 
 const VendorProtected = ({ compo }) => {
-    const auth = useSelector(state => state.auth) || {}; // safe fallback
+    const auth = useSelector(state => state.auth) || {};
     const { shopId } = auth;
     const navigate = useNavigate()
 
@@ -17,4 +17,3 @@ const VendorProtected = ({ compo }) => {
 }
 
 export default VendorProtected
-// Dataincript

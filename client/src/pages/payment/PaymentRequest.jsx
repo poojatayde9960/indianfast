@@ -1,0 +1,227 @@
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useBankRequestMutation, useGetShopBankRequestsQuery } from "../../redux/apis/bankRequestApi";
+import { useSelector } from "react-redux";
+import { useForm } from "react-hook-form";
+import { toast } from "react-toastify";
+
+const PaymentRequest = () => {
+
+    const [BankRequest] = useBankRequestMutation();
+
+    const {
+        register,
+        handleSubmit,
+        formState: { errors },
+    } = useForm();
+
+    const onSubmit = async (data) => {
+        try {
+            await BankRequest({
+                shopId: shopId,
+                amount: Number(data.amount),
+                bankAccountOrUpiId: data.bankAccountNumber,
+                accountHolderName: data.accountHolderName,
+                ifscCode: data.ifscCode,
+                remark: data.remark,
+            }).unwrap();
+            toast.success("Request Submitted Successfully!");
+            setOpenPopup(false);
+
+        } catch (err) {
+            console.log(err);
+            alert("Something went wrong!");
+        }
+    };
+
+    const shopId = useSelector((state) => state.auth.shopId);
+    const { data } = useGetShopBankRequestsQuery(shopId);
+    const balance = data?.data?.[0]?.shopId?.points ?? 0;
+
+    const navigate = useNavigate();
+    const [openPopup, setOpenPopup] = useState(false);
+
+    const getStatusColor = (status) => {
+        if (status === "completed") return "text-green-600";
+        if (status === "pending") return "text-orange-500";
+        if (status === "rejected") return "text-red-600";
+        return "text-gray-600";
+    };
+
+    const formatDate = (isoDate) => {
+        if (!isoDate) return "";
+        const date = new Date(isoDate);
+        return (
+            date.toLocaleDateString("en-IN", {
+                day: "2-digit",
+                month: "2-digit",
+                year: "numeric",
+            }) +
+            " " +
+            date.toLocaleTimeString("en-IN", {
+                hour: "2-digit",
+                minute: "2-digit",
+            })
+        );
+    };
+
+    return (
+        <>
+            {/* POPUP */}
+            {openPopup && (
+                <div className="fixed inset-0 mt-20 bg-opacity-40  flex items-center justify-center z-50 px-4">
+
+                    <form
+                        onSubmit={handleSubmit(onSubmit)}
+                        className="bg-white w-full max-w-lg md:max-w-2xl rounded-xl p-6 shadow-xl"
+                    >
+                        <h2 className="text-xl font-bold mb-4 dm-sans text-black">Withdraw Request</h2>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label className="text-gray-600">Account Holder Name</label>
+                                <input
+                                    className="w-full border border-gray-300 text-black p-2 rounded mt-1"
+                                    {...register("accountHolderName", { required: true })}
+                                />
+                            </div>
+                            <div>
+                                <label className="text-gray-600">Amount</label>
+                                <input
+                                    type="number"
+                                    className="w-full border border-gray-300 text-black p-2 rounded mt-1"
+                                    {...register("amount", { required: true })}
+                                />
+                            </div>
+
+
+
+                            <div>
+                                <label className="text-gray-600">Bank A/C or UPI ID</label>
+                                <input
+                                    className="w-full border border-gray-300 text-black p-2 rounded mt-1"
+                                    {...register("bankAccountNumber", { required: true })}
+                                />
+                            </div>
+
+                            <div>
+                                <label className="text-gray-600">IFSC Code</label>
+                                <input
+                                    className="w-full border border-gray-300 text-black p-2 rounded mt-1"
+                                    {...register("ifscCode", { required: true })}
+                                />
+                            </div>
+
+                            <div className="md:col-span-2">
+                                <label className="text-gray-600">Remark</label>
+                                <input
+                                    className="w-full border border-gray-300 text-black p-2 rounded mt-1"
+                                    {...register("remark")}
+                                />
+                            </div>
+
+                        </div>
+
+                        <div className="flex justify-end gap-3 mt-6">
+                            <button
+                                onClick={() => setOpenPopup(false)}
+                                type="button"
+                                className="px-4 py-2 text-black border rounded"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                className="px-5 py-2 rounded text-white bg-[#FF9F03]"
+                            >
+                                Submit Request
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            )}
+
+            <div className="p-4 sm:p-5 md:p-6 mt-20  bg-[#F5F5F5] min-h-[calc(100vh-80px)] overflow-y-auto">
+
+                <div className="flex flex-col md:flex-row gap-4 items-stretch">
+
+                    {/* Left Card */}
+                    <div
+                        className="rounded-2xl overflow-hidden shadow-lg p-5 flex-1"
+                        style={{
+                            background: "linear-gradient(180deg, #EF9C01 0%, #FF9129 100%)",
+                        }}
+                    >
+                        <p className="text-sm text-white opacity-90">Current Balance</p>
+
+                        <h1 className="mt-2 text-3xl dm-sans sm:text-4xl font-extrabold text-white tracking-wide">
+                            ₹{balance}
+                        </h1>
+
+                        <button
+                            onClick={() => setOpenPopup(true)}
+                            className="mt-4 px-4 py-2 w-full md:w-44 rounded-lg shadow-md text-white active:scale-95"
+                            style={{
+                                background: "linear-gradient(180deg,#E5C6A9 0%, #C99E7A 100%)",
+                                fontWeight: 600,
+                            }}
+                        >
+                            Withdraw
+                        </button>
+                    </div>
+
+                    {/* Right Card */}
+                    <div
+                        className="bg-white  rounded-2xl dm-sans p-5 flex-1 flex flex-col justify-center shadow"
+                    >
+                        <div className="mb-12">
+                            <p className="text-sm text-gray-400 dm-sans ">Total Requests</p>
+
+                            <p className="mt-3 text-3xl font-semibold text-gray-800">
+                                {data?.total ?? 0}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                {/* TABLE */}
+                <div className="mt-10 bg-white shadow rounded-xl overflow-hidden">
+
+                    <div className="border border-gray-300 rounded-xl overflow-x-auto p-4 md:p-6" style={{ height: "420px" }}>
+                        <table className="w-full min-w-[700px] text-left">
+                            <thead className="bg-gray-100 dm-sans text-gray-700 sticky dm-sans top-0 z-10">
+                                <tr>
+                                    <th className="p-3">Account Holder</th>
+                                    <th className="p-3">Amount</th>
+                                    <th className="p-3">UPI / Account</th>
+                                    <th className="p-3">IFSC</th>
+                                    <th className="p-3">Remark</th>
+                                    <th className="p-3">Date & Time</th>
+                                    <th className="p-3">Status</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                {data?.data?.map((req, index) => (
+                                    <tr key={index} className="border-t border-gray-100 text-gray-500">
+                                        <td className="p-3 dm-sans">{req.bankDetails.accountHolderName}</td>
+                                        <td className="p-3 dm-sans">₹{req.bankDetails.amount}</td>
+                                        <td className="p-3 dm-sans">{req.bankDetails.bankAccountOrUpiId}</td>
+                                        <td className="p-3 dm-sans">{req.bankDetails.ifscCode}</td>
+                                        <td className="p-3 dm-sans">{req.bankDetails.remark}</td>
+                                        <td className="p-3 dm-sans">{formatDate(req.createdAt)}</td>
+                                        <td className={`p-3 dm-sans font-semibold ${getStatusColor(req.bankDetails.statusofpayment)}`}>
+                                            {req.bankDetails.statusofpayment}
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+
+                    </div>
+                </div>
+            </div>
+        </>
+    );
+};
+
+export default PaymentRequest;

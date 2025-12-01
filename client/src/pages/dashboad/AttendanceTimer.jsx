@@ -53,10 +53,8 @@ const AttendanceTimer = () => {
     const formatTotalHoursToTimer = (decimalHours) => {
         if (!decimalHours) return "00 : 00 : 00";
 
-        // Convert decimal to exact minutes (0.58 → 58)
         const totalMinutes = Math.round(decimalHours * 100);
 
-        // Convert minutes to HH:MM
         const hrs = String(Math.floor(totalMinutes / 60)).padStart(2, "0");
         const mins = String(totalMinutes % 60).padStart(2, "0");
         const secs = "00";
@@ -147,7 +145,6 @@ const AttendanceTimer = () => {
                                 </div>
                             ))}
 
-                            {/* Empty cells before 1st */}
                             {Array.from({ length: startDayOfWeek === 0 ? 6 : startDayOfWeek - 1 }).map((_, i) => (
                                 <div key={`empty-${i}`} />
                             ))}

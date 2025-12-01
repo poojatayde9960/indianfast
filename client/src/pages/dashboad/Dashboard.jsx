@@ -6,159 +6,185 @@ import veg from "/veg.png";
 import NewOrderRequests from "./NewOrderRequests";
 import { useGetOrderByShopIdQuery } from "../../redux/apis/orderApi";
 import { useDispatch, useSelector } from "react-redux";
-import { useToggleAvailabilityMutation } from "../../redux/apis/attendance";
+import { useAttendanceGetDashbordMutation, useToggleAvailabilityMutation } from "../../redux/apis/attendance";
 import { setActive, setCheckInTime } from "../../redux/slices/vendorSlice";
 import { IoIosArrowForward } from "react-icons/io";
 
 const Dashboard = () => {
+    const [elapsedSeconds, setElapsedSeconds] = useState(0);
+    const [accumulatedTime, setAccumulatedTime] = useState(0);
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
     const { isActive = false, checkInTime = null, shopId = null } = useSelector(
         (state) => state.auth || {}
     );
+    const [toggleAvailability, { isLoading: isToggling }] = useToggleAvailabilityMutation();
+    const [attendanceGetDashbord] = useAttendanceGetDashbordMutation()
     const { data, isLoading, isError, refetch } = useGetOrderByShopIdQuery(shopId, {
         skip: !shopId,
-        // refetchOnMountOrArgChange: true
     });
-    useEffect(() => {
-        if (shopId) {
-            refetch(); // hydrated shopId
-        }
-    }, [shopId, refetch]);
-    const dispatch = useDispatch();
-    const navigate = useNavigate();
-    const { setPageTitle } = useOutletContext();
 
-    // RTK Query mutation hook
-    const [toggleAvailability, { isLoading: isToggling }] = useToggleAvailabilityMutation();
-
-    const [accumulatedTime, setAccumulatedTime] = useState(0);
-
-    useEffect(() => {
-        const today = new Date().toLocaleDateString('en-US');
-        const storedDate = localStorage.getItem('lastActiveDate');
-        const storedAccumulated = parseInt(localStorage.getItem('accumulatedActiveTime')) || 0;
-
-        const checkIn = checkInTime ? new Date(checkInTime).toLocaleDateString('en-US') : null;
-
-        // ❗ Date changed → reset
-        if (storedDate !== today) {
-            localStorage.setItem('lastActiveDate', today);
-            localStorage.setItem('accumulatedActiveTime', '0');
-            setAccumulatedTime(0);
-
-            // 🔥 EXTRA FIX → clear old checkInTime from yesterday
-            if (checkIn && checkIn !== today) {
-                dispatch(setCheckInTime(null));
-            }
-
-        } else {
-            setAccumulatedTime(storedAccumulated);
-        }
-    }, [checkInTime]);
-
-
-    // ✅ Handle toggle availability - calls backend API
-    const handleToggleAvailability = async () => {
-        // Validate shopId exists
-        if (!shopId) {
-            alert("Shop ID is missing. Please login again.");
-            return;
-        }
-
+    const parseIndianDateTime = (dateStr) => {
+        if (!dateStr) return null;
         try {
-            // Call the backend API
-            const result = await toggleAvailability({
-                ShopId: shopId,
-            }).unwrap();
-
-            // Update Redux state based on API response
-            // The API should return the new status and checkInTime
-            const newStatus = result?.isActive ?? !isActive;
-            let newCheckInTime = newStatus
-                ? (result?.checkInTime || new Date().toISOString())
-                : null;
-
-            // Accumulate time if going offline
-            if (!newStatus && isActive && checkInTime) {
-                const now = new Date();
-                const start = new Date(checkInTime);
-                const diff = now - start;
-                const newAccumulated = accumulatedTime + diff;
-                setAccumulatedTime(newAccumulated);
-                localStorage.setItem('accumulatedActiveTime', newAccumulated.toString());
-            }
-
-            // Dispatch actions to update Redux state
-            dispatch(setActive(newStatus));
-            dispatch(setCheckInTime(newCheckInTime));
-
-            // Optional: Log success
-            console.log("✅ Availability toggled successfully:", result);
-        } catch (error) {
-            // Handle errors
-            console.error("❌ Error toggling availability:", error);
-            const errorMessage =
-                error?.data?.message ||
-                error?.data?.error ||
-                error?.message ||
-                "Failed to toggle availability. Please try again.";
-            alert(errorMessage);
+            const [datePart, timePart] = dateStr.split(", ");
+            const [day, month, year] = datePart.split("/");
+            const formatted = `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")} ${timePart.trim()}`;
+            const date = new Date(formatted);
+            return isNaN(date.getTime()) ? null : date;
+        } catch (e) {
+            console.error("Failed to parse date:", dateStr);
+            return null;
         }
     };
 
-    const [duration, setDuration] = useState("00 : 00 : 00");
-
-    // ✅ Timer logic
+    const parseDurationFormatted = (str) => {
+        if (!str) return 0;
+        let totalSeconds = 0;
+        const hr = str.match(/(\d+)\s*hr/i);
+        const min = str.match(/(\d+)\s*min/i);
+        if (hr) totalSeconds += parseInt(hr[1]) * 3600;
+        if (min) totalSeconds += parseInt(min[1]) * 60;
+        return totalSeconds;
+    };
+    const orders = data?.orders || [];
+    const stats = data?.stats || {
+        totalOrders: 0,
+        todayOrders: 0,
+        totalVendorAmount: 0,
+        todayVendorAmount: 0,
+    };
     useEffect(() => {
-        const calculateDuration = () => {
-            let totalMs = accumulatedTime;
-            const now = new Date();
+        if (!shopId) return;
 
-            if (isActive && checkInTime) {
-                const start = new Date(checkInTime);
+        const fetchDashboardStatus = async () => {
+            try {
+                const res = await attendanceGetDashbord({ ShopId: shopId }).unwrap();
+                const data = res.result || res;
 
-                const isSameDay =
-                    now.toLocaleDateString("en-US") === start.toLocaleDateString("en-US");
+                const hasOngoing = data.currentSessionInfo?.hasOngoingSession || false;
+                const isOpen = data.availabilityStatus === "Open";
+                const isOnline = isOpen && hasOngoing;
 
+                dispatch(setActive(isOnline));
 
-                if (isSameDay) {
-                    totalMs += now - start;
+                let initialSeconds = 0;
+                if (isOnline && data.currentSessionInfo?.durationFormatted) {
+                    initialSeconds = parseDurationFormatted(data.currentSessionInfo.durationFormatted);
                 }
+
+                setElapsedSeconds(initialSeconds);
+
+                if (data.currentSessionInfo?.checkInTime) {
+                    const parsed = parseIndianDateTime(data.currentSessionInfo.checkInTime);
+                    dispatch(setCheckInTime(parsed?.toISOString() || null));
+                }
+
+            } catch (err) {
+                console.error("Failed to fetch dashboard:", err);
             }
-
-            const hours = String(Math.floor(totalMs / (1000 * 60 * 60))).padStart(2, "0");
-            const minutes = String(Math.floor((totalMs / (1000 * 60)) % 60)).padStart(2, "0");
-            const seconds = String(Math.floor((totalMs / 1000) % 60)).padStart(2, "0");
-
-            setDuration(`${hours} : ${minutes} : ${seconds}`);
         };
 
-        calculateDuration();
+        fetchDashboardStatus();
+    }, [shopId, dispatch, attendanceGetDashbord]);
 
-        let interval;
-        if (isActive) {
-            interval = setInterval(calculateDuration, 1000);
+
+
+    const { setPageTitle } = useOutletContext();
+    const handleToggleAvailability = async () => {
+        if (!shopId || isToggling) return;
+
+        const newStatus = !isActive;
+        dispatch(setActive(newStatus));
+        if (!isActive && !checkInTime) {
+            dispatch(setCheckInTime(new Date().toISOString()));
         }
 
-        return () => interval && clearInterval(interval);
-    }, [isActive, checkInTime, accumulatedTime]);
+        try {
+            const response = await toggleAvailability({ ShopId: shopId }).unwrap();
+            const data = response.result || response;
 
+            const actualStatus = data.availabilityStatus === "Open" || data.currentSessionInfo?.hasOngoingSession;
+            const actualCheckIn = data.currentSessionInfo?.checkInTime;
 
-    const orders = data?.orders || [];
+            dispatch(setActive(actualStatus));
+            dispatch(setCheckInTime(actualCheckIn || null));
 
-    // ✅ Dynamic counts
-    const totalOrders = orders.length;
-    const deliveredOrders = orders.filter((o) => o.orderStatus === "delivered").length;
+        } catch (error) {
+            console.error("Failed to toggle availability:", error);
+            dispatch(setActive(!newStatus)); // revert
+            if (!isActive) dispatch(setCheckInTime(null));
+
+            alert("Failed to update availability. Please try again.");
+        }
+    };
+    useEffect(() => {
+        let currentShopId = shopId;
+        if (!currentShopId) {
+            const stored = localStorage.getItem("shopId");
+            if (stored) {
+                try {
+                    const parsed = JSON.parse(stored);
+                    currentShopId = parsed.shopId || parsed.result?.shopId || parsed;
+                } catch (e) {
+                    console.error("Error parsing shopId from localStorage:", e);
+                }
+            }
+        }
+        if (currentShopId) {
+            console.log("Calling get/dashbord with ShopId:", currentShopId);
+            attendanceGetDashbord({ ShopId: currentShopId })
+                .unwrap()
+                .then((response) => {
+                    console.log("Dashboard Status Response:", response);
+                    const data = response.result || response;
+
+                    if (data) {
+                        const isOnline = data.availabilityStatus === "Open" || data.currentSessionInfo?.hasOngoingSession;
+                        dispatch(setActive(isOnline));
+
+                        const checkIn = data.currentSessionInfo?.checkInTime;
+                        dispatch(setCheckInTime(checkIn));
+                    }
+                })
+                .catch((error) => {
+                    console.error("Failed to fetch dashboard status:", error);
+                });
+        } else {
+            console.warn("No ShopId found (in Redux or localStorage), skipping get/dashbord call.");
+        }
+    }, [shopId, attendanceGetDashbord, dispatch]);
+    const [duration, setDuration] = useState("00 : 00 : 00");
+    useEffect(() => {
+        if (!isActive) {
+            setDuration("00 : 00 : 00");
+            return;
+        }
+
+        const interval = setInterval(() => {
+            setElapsedSeconds(prev => {
+                const totalSeconds = prev + 1;
+
+                const hours = String(Math.floor(totalSeconds / 3600)).padStart(2, "0");
+                const minutes = String(Math.floor((totalSeconds % 3600) / 60)).padStart(2, "0");
+                const seconds = String(totalSeconds % 60).padStart(2, "0");
+
+                setDuration(`${hours} : ${minutes} : ${seconds}`);
+                return totalSeconds;
+            });
+        }, 1000);
+
+        return () => clearInterval(interval);
+    }, [isActive]);
+
     const readyOrders = orders.filter((o) => o.orderStatus === "ready" || o.orderStatus === "orderAccepted").length;
     const rejectedOrders = orders.filter((o) => o.orderStatus === "rejected").length;
     const pickupOrders = orders.filter((o) => o.orderStatus === "pickup").length;
-    const totalRevenue = orders.reduce((sum, o) => sum + (o.paymentSummary?.vendorAmount || 0), 0);
 
-    // if (isLoading) return <p className="text-center mt-52">Loading orders...</p>;
     if (isLoading) {
         return (
             <div className="p-4 sm:p-5 md:p-6 bg-[#F5F5F5] mt-20 min-h-[calc(100vh-80px)] md:h-[calc(100vh-80px)] overflow-y-auto transition-all duration-500">
 
-                {/* Skeleton cards grid */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-12 mb-8">
                     {[...Array(3)].map((_, i) => (
                         <div
@@ -186,14 +212,11 @@ const Dashboard = () => {
         );
     }
 
-    // if (isError) return <p className="text-center mt-52 text-red-500">Failed to load orders.</p>;
 
     return (
         <div className="p-4 sm:p-5 md:p-6 bg-[#F5F5F5] mt-20 min-h-[calc(100vh-80px)] md:h-[calc(100vh-80px)] overflow-y-auto transition-all duration-500">
-            {/* <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-12 mb-8"> */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-12 mb-8 w-full">
 
-                {/* Total Orders */}
                 <div
                     onClick={() => navigate("/orders")}
                     className="cursor-pointer bg-white rounded-3xl h-36 shadow-[0_4px_20px_0_rgba(0,0,0,0.1)] p-5 flex flex-col justify-between hover:shadow-[0_8px_25px_rgba(0,0,0,0.2)] transition-shadow duration-300"
@@ -205,12 +228,13 @@ const Dashboard = () => {
                         </div>
                     </div>
                     <div>
-                        <h2 className="text-3xl dm-sans mb-3 font-bold text-gray-900">{totalOrders}</h2>
+                        <h2 className="text-3xl dm-sans mb-3 font-bold text-gray-900">
+                            {stats.totalOrders || 0}
+                        </h2>
                         <p className="text-sm text-[#808080] font-Poppins">All orders received</p>
                     </div>
                 </div>
 
-                {/* Delivered Orders */}
                 <div onClick={() => navigate("/orders?tab=Completed")}
                     className="bg-white rounded-3xl h-36 shadow-[0_4px_20px_0_rgba(0,0,0,0.1)] p-5 flex flex-col justify-between hover:shadow-[0_8px_25px_rgba(0,0,0,0.2)] transition-shadow duration-300">
                     <div className="flex justify-between items-center">
@@ -220,12 +244,14 @@ const Dashboard = () => {
                         </div>
                     </div>
                     <div>
-                        <h2 className="text-3xl dm-sans mb-3 font-bold text-gray-900">{deliveredOrders}</h2>
+                        <h2 className="text-3xl dm-sans mb-3 font-bold text-gray-900">
+                            {stats.todayOrders || 0}
+                        </h2>
+
                         <p className="text-sm text-[#808080] font-Poppins">Orders successfully delivered</p>
                     </div>
                 </div>
 
-                {/* Total Revenue */}
                 <div
                     onClick={() => {
                         navigate("/transactions");
@@ -240,17 +266,16 @@ const Dashboard = () => {
                         </div>
                     </div>
                     <div>
-                        <h2 className="text-3xl dm-sans mb-3 font-bold text-gray-900">₹ {totalRevenue.toFixed(2)}</h2>
+                        <h2 className="text-3xl dm-sans mb-3 font-bold text-gray-900">
+                            ₹ {stats.totalVendorAmount?.toFixed(2) || "0.00"}
+                        </h2>
                         <p className="text-sm text-[#808080] font-Poppins">Vendor earnings</p>
                     </div>
                 </div>
-
-                {/* Availability Toggle */}
                 <div
                     className={`w-full sm:w-[105%] md:w-[110%] rounded-xl p-6 flex items-center justify-between transition-all duration-300
     ${isActive ? "bg-[#F0FFF4] text-[#000000] border border-[#34C759]" : "bg-white shadow-[0_4px_20px_rgba(0,0,0,0.1)]"} `}
                 >
-
                     <div>
                         <h2 className="text-xl font-semibold dm-sans text-[#000000] transition-all duration-300">
                             {isActive ? "You're Online" : "You're Offline"}
@@ -258,7 +283,6 @@ const Dashboard = () => {
                         <p className={`text-sm mt-1 transition-all duration-300 ${isActive ? "text-[#1E1E1E]" : "text-gray-500"}`}>
                             {isActive ? "Ready to accept orders" : "Turn on to start receiving orders"}
                         </p>
-
                     </div>
                     <button
                         onClick={handleToggleAvailability}
@@ -269,7 +293,6 @@ const Dashboard = () => {
     ${!shopId ? "opacity-50 cursor-not-allowed" : ""}`}
                         aria-label={isActive ? "Go offline" : "Go online"}
                     >
-                        {/* ✅ Spinner while toggling */}
                         {isToggling ? (
                             <svg
                                 className="animate-spin h-5 w-5 text-white"
@@ -298,11 +321,8 @@ const Dashboard = () => {
                             ></span>
                         )}
                     </button>
-
                 </div>
 
-                {/* Timer */}
-                {/* <div className="bg-white w-[110%] rounded-xl ml-3 shadow-[0_4px_20px_rgba(0,0,0,0.1)] p-6 flex flex-col items-center justify-center"> */}
                 <div className="bg-white w-full sm:w-[105%] md:w-[110%] rounded-xl sm:ml-1 shadow-[0_4px_20px_rgba(0,0,0,0.1)] p-6 flex flex-col items-center justify-center">
 
                     <h1 className="text-3xl font-bold dm-sans text-black">{duration}</h1>
@@ -317,7 +337,6 @@ const Dashboard = () => {
                 </div>
             </div>
 
-            {/* Existing Section */}
             <NewOrderRequests />
         </div>
     );
@@ -359,214 +378,3 @@ export default Dashboard;
 
 
 
-
-
-
-
-
-
-// import React, { useEffect, useState } from "react";
-// import { Icon } from "@iconify/react";
-// import { useNavigate, useOutletContext } from "react-router-dom";
-// import vector from "/vector.png";
-// import veg from "/veg.png";
-// import NewOrderRequests from "./NewOrderRequests";
-// import { useGetOrderByShopIdQuery } from "../../redux/apis/orderApi";
-// import { useDispatch, useSelector } from "react-redux";
-// import { useToggleAvailabilityMutation } from "../../redux/apis/AttendanceApi";
-// import { setActive, setCheckInTime } from "../../redux/slices/vendorSlice";
-
-// const Dashboard = () => {
-//     const { isActive = false, checkInTime = null, shopId = null } = useSelector(
-//         (state) => state.auth || {}
-//     );
-//     const { data, isLoading, isError, refetch } = useGetOrderByShopIdQuery(shopId, {
-//         skip: !shopId,
-//         // refetchOnMountOrArgChange: true
-//     });
-//     useEffect(() => {
-//         if (shopId) {
-//             refetch(); // hydrated shopId
-//         }
-//     }, [shopId, refetch]);
-//     const dispatch = useDispatch();
-//     const navigate = useNavigate();
-//     const { setPageTitle } = useOutletContext();
-
-//     // RTK Query mutation hook
-//     const [toggleAvailability, { isLoading: isToggling }] = useToggleAvailabilityMutation();
-
-//     // ✅ Handle toggle availability - calls backend API
-//     const handleToggleAvailability = async () => {
-//         // Validate shopId exists
-//         if (!shopId) {
-//             alert("Shop ID is missing. Please login again.");
-//             return;
-//         }
-
-//         try {
-//             // Call the backend API
-//             const result = await toggleAvailability({
-//                 ShopId: shopId,
-//             }).unwrap();
-
-//             // Update Redux state based on API response
-//             // The API should return the new status and checkInTime
-//             const newStatus = result?.isActive ?? !isActive;
-//             const newCheckInTime = newStatus
-//                 ? (result?.checkInTime || new Date().toISOString())
-//                 : null;
-
-//             // Dispatch actions to update Redux state
-//             dispatch(setActive(newStatus));
-//             dispatch(setCheckInTime(newCheckInTime));
-
-//             // Optional: Log success
-//             console.log("✅ Availability toggled successfully:", result);
-//         } catch (error) {
-//             // Handle errors
-//             console.error("❌ Error toggling availability:", error);
-//             const errorMessage =
-//                 error?.data?.message ||
-//                 error?.data?.error ||
-//                 error?.message ||
-//                 "Failed to toggle availability. Please try again.";
-//             alert(errorMessage);
-//         }
-//     };
-
-//     const [duration, setDuration] = useState("00 : 00 : 00");
-
-//     // ✅ Timer logic
-//     useEffect(() => {
-//         if (!checkInTime || !isActive) return;
-
-//         const interval = setInterval(() => {
-//             const now = new Date();
-//             const start = new Date(checkInTime);
-//             const diff = now - start;
-
-//             const hours = String(Math.floor(diff / (1000 * 60 * 60))).padStart(2, "0");
-//             const minutes = String(Math.floor((diff / (1000 * 60)) % 60)).padStart(2, "0");
-//             const seconds = String(Math.floor((diff / 1000) % 60)).padStart(2, "0");
-
-//             setDuration(`${hours} : ${minutes} : ${seconds}`);
-//         }, 1000);
-
-//         return () => clearInterval(interval);
-//     }, [checkInTime, isActive]);
-
-
-//     const orders = data?.orders || [];
-
-//     // ✅ Dynamic counts
-//     const totalOrders = orders.length;
-//     const deliveredOrders = orders.filter((o) => o.orderStatus === "delivered").length;
-//     const readyOrders = orders.filter((o) => o.orderStatus === "ready" || o.orderStatus === "orderAccepted").length;
-//     const rejectedOrders = orders.filter((o) => o.orderStatus === "rejected").length;
-//     const pickupOrders = orders.filter((o) => o.orderStatus === "pickup").length;
-//     const totalRevenue = orders.reduce((sum, o) => sum + (o.paymentSummary?.vendorAmount || 0), 0);
-
-//     if (isLoading) return <p className="text-center mt-52">Loading orders...</p>;
-//     if (isError) return <p className="text-center mt-52 text-red-500">Failed to load orders.</p>;
-
-//     return (
-//         <div className="p-4 sm:p-5 md:p-6 bg-[#F5F5F5] mt-20 min-h-[calc(100vh-80px)] md:h-[calc(100vh-80px)] overflow-y-auto transition-all duration-500">
-//             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-12 mb-8">
-
-//                 {/* Total Orders */}
-//                 <div
-//                     onClick={() => navigate("/totalOrders")}
-//                     className="cursor-pointer bg-white rounded-3xl h-36 shadow-[0_4px_20px_0_rgba(0,0,0,0.1)] p-5 flex flex-col justify-between hover:shadow-[0_8px_25px_rgba(0,0,0,0.2)] transition-shadow duration-300"
-//                 >
-//                     <div className="flex justify-between items-center">
-//                         <h3 className="text-[#1E1E1E] text-[122%] font-Poppins mb-1">Total Orders</h3>
-//                         <div className="w-11 h-11 flex items-center justify-center rounded-full bg-[#3F922426]">
-//                             <Icon icon="lets-icons:order-light" className="text-[#EF9C01] w-7 h-7 font-bold" />
-//                         </div>
-//                     </div>
-//                     <div>
-//                         <h2 className="text-3xl dm-sans mb-3 font-bold text-gray-900">{totalOrders}</h2>
-//                         <p className="text-sm text-[#808080] font-Poppins">All orders received</p>
-//                     </div>
-//                 </div>
-
-//                 {/* Delivered Orders */}
-//                 <div className="bg-white rounded-3xl h-36 shadow-[0_4px_20px_0_rgba(0,0,0,0.1)] p-5 flex flex-col justify-between hover:shadow-[0_8px_25px_rgba(0,0,0,0.2)] transition-shadow duration-300">
-//                     <div className="flex justify-between items-center">
-//                         <h3 className="text-[#1E1E1E] text-[122%] font-Poppins mb-1">Delivered Orders</h3>
-//                         <div className="w-11 h-11 flex items-center justify-center rounded-full bg-[#3F922426]">
-//                             <Icon icon="mdi:truck-delivery-outline" className="text-[#EF9C01] w-7 h-7 font-bold" />
-//                         </div>
-//                     </div>
-//                     <div>
-//                         <h2 className="text-3xl dm-sans mb-3 font-bold text-gray-900">{deliveredOrders}</h2>
-//                         <p className="text-sm text-[#808080] font-Poppins">Orders successfully delivered</p>
-//                     </div>
-//                 </div>
-
-//                 {/* Total Revenue */}
-//                 <div
-//                     onClick={() => {
-//                         navigate("/transactions");
-//                         setPageTitle("Transactions");
-//                     }}
-//                     className="bg-white rounded-3xl h-36 shadow-[0_4px_20px_0_rgba(0,0,0,0.1)] p-5 flex flex-col justify-between hover:shadow-[0_8px_25px_rgba(0,0,0,0.2)] transition-shadow duration-300"
-//                 >
-//                     <div className="flex justify-between items-center">
-//                         <h3 className="text-[#1E1E1E] text-[122%] font-Poppins mb-1">Total Revenue</h3>
-//                         <div className="w-11 h-11 flex items-center justify-center rounded-full bg-[#3F922426]">
-//                             <Icon icon="pepicons-pencil:money-note-circle" className="text-[#EF9C01] w-7 h-7 font-bold" />
-//                         </div>
-//                     </div>
-//                     <div>
-//                         <h2 className="text-3xl dm-sans mb-3 font-bold text-gray-900">₹ {totalRevenue.toFixed(2)}</h2>
-//                         <p className="text-sm text-[#808080] font-Poppins">Vendor earnings</p>
-//                     </div>
-//                 </div>
-
-//                 {/* Availability Toggle */}
-//                 <div
-//                     className={`w-[110%] rounded-xl p-6 flex items-center justify-between transition-all duration-300
-//             ${isActive ? "bg-[#F0FFF4] text-[#000000] border border-[#34C759]" : "bg-white shadow-[0_4px_20px_rgba(0,0,0,0.1)]"} `}
-//                 >
-//                     <div>
-//                         <h2 className="text-xl font-semibold dm-sans transition-all duration-300">
-//                             {isActive ? "You're Online" : "You're Offline"}
-//                         </h2>
-//                         <p className={`text-sm mt-1 transition-all duration-300 ${isActive ? "text-[#1E1E1E]" : "text-gray-500"}`}>
-//                             {isActive ? "Ready to accept orders" : "Turn on to start receiving orders"}
-//                         </p>
-//                     </div>
-//                     <button
-//                         onClick={handleToggleAvailability}
-//                         disabled={isToggling || !shopId}
-//                         className={`relative w-[55px] h-[28px] rounded-full flex items-center transition-all duration-300
-//               ${isActive ? "bg-black" : "bg-[#D9D9D9]"}
-//               ${isToggling ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}
-//               ${!shopId ? "opacity-50 cursor-not-allowed" : ""}`}
-//                         aria-label={isActive ? "Go offline" : "Go online"}
-//                     >
-//                         <span
-//                             className={`absolute left-[3px] w-[22px] h-[22px] rounded-full transition-all duration-300
-//                 ${isActive ? "translate-x-[27px] bg-[#FF6F00]" : "translate-x-0 bg-white"}`}
-//                         ></span>
-//                     </button>
-//                 </div>
-
-//                 {/* Timer */}
-//                 <div className="bg-white w-[110%] rounded-xl ml-3 shadow-[0_4px_20px_rgba(0,0,0,0.1)] p-6 flex flex-col items-center justify-center">
-//                     <h1 className="text-3xl font-bold dm-sans text-black">{duration}</h1>
-//                     <p className="text-gray-600 mt-2 dm-sans">
-//                         {checkInTime ? new Date(checkInTime).toLocaleDateString() : new Date().toLocaleDateString()}
-//                     </p>
-//                 </div>
-//             </div>
-
-//             {/* Existing Section */}
-//             <NewOrderRequests />
-//         </div>
-//     );
-// };
-
-// export default Dashboard;

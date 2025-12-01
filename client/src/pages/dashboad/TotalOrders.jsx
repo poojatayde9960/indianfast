@@ -88,7 +88,6 @@ const TotalOrders = () => {
                         onClick={() => setIsFilterOpen(!isFilterOpen)}
                     />
 
-                    {/* <Icon icon="mdi:filter-outline" className="text-[220%] font-medium text-black " /> */}
                 </div>
             </div>
 

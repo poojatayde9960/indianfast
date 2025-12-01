@@ -67,10 +67,8 @@ const Login = () => {
             "
             style={{ backgroundImage: `url(${background})` }}
         >
-            {/* Black Overlay */}
             <div className="absolute inset-0 bg-black/60"></div>
 
-            {/* 🔸 Top Right Circle (Hidden on Mobile & Tablet) */}
             <div className="hidden lg:block absolute top-24 right-20 rotate-[-45deg] translate-x-1/3 -translate-y-1/3 z-10">
                 <div
                     className="w-[465px] h-[465px] rounded-full flex items-center justify-center"
@@ -82,7 +80,6 @@ const Login = () => {
                 </div>
             </div>
 
-            {/* 🔸 Bottom Left Circle (Hidden on Mobile & Tablet) */}
             <div className="hidden lg:block absolute bottom-0 left-0 rotate-[-45deg] -translate-x-1/3 translate-y-1/3 z-10">
                 <div
                     className="w-[465px] h-[465px] rounded-full flex items-center justify-center"
@@ -103,7 +100,6 @@ const Login = () => {
                 />
             </div>
 
-            {/* 🔸 Login Box */}
             <div
                 className="
                     relative z-20 mt-32 sm:mt-40 bg-[#1E1E1E]/90 text-white 
@@ -115,7 +111,6 @@ const Login = () => {
                 <form
                     onSubmit={otpSent ? handleSubmit(handleVerifyOtp) : handleSubmit(handleSendOtp)}
                 >
-                    {/* Mobile Number */}
                     <input
                         type="text"
                         placeholder="Mobile Number"

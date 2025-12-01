@@ -42,7 +42,6 @@ const Orders = () => {
         };
     }, [showFilter]);
 
-    // Load orders into local state
     useEffect(() => {
         if (data?.orders) setLocalOrders(data.orders);
     }, [data]);
@@ -102,7 +101,7 @@ const Orders = () => {
         }
     };
 
-    // Delivery Picked Up → Delivered
+
     const handleDeliveryPickedUp = async (orderId) => {
         try {
             await confirmRejectOrder({
@@ -126,7 +125,7 @@ const Orders = () => {
     };
 
 
-    // Active tab based on URL query
+
     useEffect(() => {
         const params = new URLSearchParams(location.search);
         const tab = params.get("tab") || "All";
@@ -256,7 +255,6 @@ const Orders = () => {
 
         {/* <pre className="text-black mt-15">{JSON.stringify(data, null, 2)}</pre> */}
         <div className="p-2 md:p-6 bg-[#F5F5F5] mt-20 h-[calc(100vh-80px)] flex flex-col overflow-hidden transition-all duration-500">
-            {/* Tabs */}
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center w-full text-[17px] text-[#808080] relative gap-4 md:gap-0">
 
                 {/* LEFT SIDE - Tabs */}
@@ -304,7 +302,6 @@ const Orders = () => {
             {/* Table / Card View */}
             <div className="bg-white mt-6 shadow-[0_4px_20px_rgba(0,0,0,0.2)] p-4 md:p-6 flex-1 flex flex-col overflow-hidden">
                 <div className="overflow-y-auto mt-5 flex-1">
-                    {/* Desktop Table View */}
                     <table className="hidden lg:table w-full border-collapse text-left text-gray-800">
                         <thead className="bg-gray-100 h-16 text-[15px] dm-sans font-bold text-[#000000] sticky top-0 z-10">
                             <tr>
@@ -392,7 +389,6 @@ const Orders = () => {
                         </tbody>
                     </table>
 
-                    {/* Mobile/Tablet Card View */}
                     <div className="lg:hidden flex flex-col gap-4">
                         {filteredOrders.map((order, index) => {
                             const customer = order.addressId?.name || "—";
@@ -484,7 +480,6 @@ const Orders = () => {
             <div className="fixed inset-0 bg-black/40 flex justify-center items-center z-50 p-4">
                 <div className="bg-white w-[95%] max-w-lg h-auto max-h-[80vh] overflow-y-auto rounded-2xl p-5 relative shadow-xl">
 
-                    {/* Close Button */}
                     <button
                         onClick={() => setSelectedOrder(null)}
                         className="absolute top-3 right-3 text-gray-500 hover:text-black text-xl"
@@ -492,7 +487,6 @@ const Orders = () => {
                         ✕
                     </button>
 
-                    {/* Header */}
                     <div className="flex items-center gap-4  pb-3">
                         <div className="bg-orange-500 p-3 rounded-full text-white text-3xl">
                             <img src={vector} alt="User" className="" />

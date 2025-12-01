@@ -110,20 +110,20 @@ const Transactions = () => {
 
         switch (status.toLowerCase()) {
             case "delivered":
-                return "#18780A"; // green
+                return "#18780A";
             case "orderaccepted":
             case "accepted":
-                return "#1B76FF"; // blue
+                return "#1B76FF";
             case "pickup":
             case "picked":
             case "outfordelivery":
-                return "#FF8C00"; // orange
+                return "#FF8C00";
             case "rejected":
             case "cancelled":
-                return "#E60023"; // red
+                return "#E60023";
             case "placeorder":
             case "pending":
-                return "#777"; // grey
+                return "#777";
             default:
                 return "#555"; // default
         }
@@ -184,7 +184,7 @@ const Transactions = () => {
         {/* <pre className="text-black mt-60">{JSON.stringify(data, null, 2)}</pre> */}
 
         <div className="p-4 sm:p-5 md:p-6 bg-[#F5F5F5] mt-20 min-h-[calc(100vh-80px)] md:h-[calc(100vh-80px)] overflow-y-auto transition-all duration-500">
-            {/* Top Section */}
+
             <div
                 className="flex flex-col md:flex-row justify-between items-start md:items-center bg-white pr-8 pl-8 p-5 mb-8"
                 style={{
@@ -215,7 +215,7 @@ const Transactions = () => {
                 </div>
 
 
-                {/* Filter + Search */}
+
                 <div
                     className="flex flex-col md:flex-row md:items-center 
                 md:justify-end items-start justify-start 

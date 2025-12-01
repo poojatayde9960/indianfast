@@ -19,6 +19,8 @@ import VendorProtected from "./share/vendorProtected";
 import Review from "./pages/Review";
 import "react-datepicker/dist/react-datepicker.css";
 import AttendanceTimer from "./pages/dashboad/AttendanceTimer";
+import PaymentRequest from "./pages/payment/PaymentRequest";
+import Withdraw from "./pages/payment/Withdraw";
 
 const App = () => {
   return (
@@ -37,7 +39,6 @@ const App = () => {
           theme="colored"
         />
         <Routes>
-          {/* Default route should go to login */}
           <Route path="/" element={<Navigate to="/login" replace />} />
 
           <Route path="/login" element={<Login />} />
@@ -56,6 +57,8 @@ const App = () => {
             <Route path="coupons" element={<Coupons />} />
             <Route path="personalDetails" element={<PersonalDetails />} />
             <Route path="attendanceTimer" element={<AttendanceTimer />} />
+            <Route path="paymentRequest" element={<PaymentRequest />} />
+            <Route path="withdraw" element={<Withdraw />} />
             <Route path="approved-banners" element={<SeeApprovedBanners />} />
           </Route>
 

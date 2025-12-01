@@ -68,7 +68,6 @@ const PersonalDetails = () => {
                 hotelAddress: s.hotelAddress || "",
                 hotelPhone: s.hotelNumber || "",
 
-                // 🔥 CORRECT KEYS FOR LOCATION 🔥
                 areaName: s.locations?.area || "",
                 city: s.locations?.city || "",
                 pinCode: s.locations?.pincode || "",
@@ -99,7 +98,6 @@ const PersonalDetails = () => {
             <h2 className="text-3xl font-semibold text-black mb-4">Owner Details</h2>
 
             <form onSubmit={formik.handleSubmit}>
-                {/* OWNER DETAILS */}
                 <div className="bg-white p-4 m-3 md:p-8 md:m-5 shadow-sm">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         {/* Owner Name */}

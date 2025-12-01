@@ -52,10 +52,8 @@ const Review = () => {
                 </div>
             </div>
 
-            {/* USER FEEDBACK TITLE */}
             <p className="mt-6 text-xl font-semibold text-gray-800">User Feedback</p>
 
-            {/* FEEDBACK CARD LIST */}
             <div className="mt-4">
                 {reviews.length > 0 ? (
                     reviews.map((item, index) => (
@@ -70,20 +68,17 @@ const Review = () => {
                                     <span className="text-2xl">👤</span>
                                 </div>
 
-                                {/* NAME + RATING */}
                                 <div>
                                     <p className="text-lg font-semibold text-gray-800">
                                         {item?.userId?.Name || "User"}
                                     </p>
 
-                                    {/* STARS */}
                                     <div className="flex gap-1 mt-1">
                                         {renderStars(item?.rating)}
                                     </div>
                                 </div>
                             </div>
 
-                            {/* COMMENT */}
                             <p className="text-gray-700 mt-3 leading-relaxed">
                                 {item?.comment || "No Comment"}
                             </p>

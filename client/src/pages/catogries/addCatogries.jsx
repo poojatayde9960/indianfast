@@ -14,7 +14,7 @@ const AddCategories = ({ searchTerm }) => {
     console.log("API DATA → ", data);
     const handleDelete = async (id) => {
         try {
-            await deleteCategory(id).unwrap(); // unwrap() important for catching errors
+            await deleteCategory(id).unwrap();
             // alert("Deleted successfully");
             toast.success("Deleted successfully!!!");
         } catch (error) {
@@ -118,7 +118,6 @@ const AddCategories = ({ searchTerm }) => {
                 <div className="bg-white rounded-2xl mt-8 shadow-md p-6 w-full mb-6">
                     <div className="w-full">
 
-                        {/* ✅ DESKTOP TABLE (md आणि पुढे) */}
                         <div className="overflow-x-auto hidden md:block">
                             <table className="w-full border-collapse text-left text-gray-800 min-w-[400px]">
                                 <thead className="bg-gray-100 text-[100%] font-DM Sans">

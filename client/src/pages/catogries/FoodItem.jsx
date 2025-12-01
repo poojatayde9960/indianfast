@@ -29,7 +29,6 @@ const FoodItem = () => {
     const [showItemModal, setShowItemModal] = useState(false);
     const [activeCard, setActiveCard] = useState("card2");
     const shopId = useSelector((state) => state.auth.shopId);
-    // ========== React Hook Form for Category ==========
     const {
         register,
         handleSubmit,
@@ -44,11 +43,11 @@ const FoodItem = () => {
 
     const onSubmitCategory = async (data) => {
         const formData = new FormData();
-        formData.append("name", data.categoryName);   // backend format
-        formData.append("shopId", shopId);            // dynamic shopId
+        formData.append("name", data.categoryName);
+        formData.append("shopId", shopId);
 
         if (data.categoryImage?.[0]) {
-            formData.append("image", data.categoryImage[0]); // backend expects `image`
+            formData.append("image", data.categoryImage[0]);
         }
 
         try {

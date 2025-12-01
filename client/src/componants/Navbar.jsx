@@ -32,11 +32,11 @@ const Navbar = ({ title, searchTerm, setSearchTerm }) => {
             await vendorLogout(shopId).unwrap();
             dispatch(logout());
             localStorage.removeItem("shopId");
-            localStorage.removeItem("token"); // Assuming token is stored
-            navigate("/"); // Redirect to login or home
+            localStorage.removeItem("token");
+            navigate("/");
         } catch (error) {
             console.error("Logout failed", error);
-            // Force logout even if API fails?
+
             dispatch(logout());
             localStorage.removeItem("shopId");
             navigate("/");
@@ -45,7 +45,6 @@ const Navbar = ({ title, searchTerm, setSearchTerm }) => {
     const shopId = useSelector((state) => state.auth.shopId);
     const { data, isLoading, isError } = useGetProfileQuery(shopId);
     const location = useLocation();
-    // 🔹 Determine page title dynamically from URL path
     let pageTitle = "";
     if (location.pathname.includes("orders")) {
         pageTitle = "Orders";
@@ -125,15 +124,7 @@ const Navbar = ({ title, searchTerm, setSearchTerm }) => {
 
                 {/* Right Section */}
                 <div className="flex items-center gap-4 md:gap-6 relative">
-                    {/* Notification Icon */}
-                    {/* <button onClick={toggleNotifications} className="relative z-50">
-                        <Icon
-                            icon="carbon:notification"
-                            className="text-[#000000] w-6 h-6 md:w-7 md:h-7"
-                        />
-                    </button> */}
 
-                    {/* Avatar */}
                     <div
                         onClick={toggleProfile}
                         className="w-10 h-10 md:w-[49px] md:h-[49px] rounded-full bg-[#FF9F03] flex items-center justify-center text-white text-lg cursor-pointer z-50"
@@ -156,14 +147,14 @@ const Navbar = ({ title, searchTerm, setSearchTerm }) => {
                     {/* <img src={techsurya} alt="Logo" className="w-40 md:w-48 h-28 md:h-36 -mb-4" /> */}
                     <img src={data?.shop?.hotelImage || img1} alt="User" className="text-black w-14 md:w-16 h-14 md:h-16 mt-2" />
 
-                    {/* ⭐ Hotel Name Dynamic */}
+
                     <h2 className="text-base md:text-lg text-[#1E1E1E] mt-3 text-center">
                         {data?.shop?.hotelName || "Loading..."}
                     </h2>
 
                     <hr className="w-full border-gray-300 my-4" />
 
-                    {/* ⭐ Email Dynamic */}
+
                     <div className="w-full flex flex-col items-center justify-center gap-4 mt-4">
 
                         {/* Email */}

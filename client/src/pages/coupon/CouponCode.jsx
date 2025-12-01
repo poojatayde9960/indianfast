@@ -4,7 +4,6 @@ import { Icon } from "@iconify/react";
 const Coupons = () => {
     const [showModal, setShowModal] = useState(false);
 
-    // Outside click handle
     const handleOutsideClick = (e) => {
         if (e.target.id === "modalOverlay") {
             setShowModal(false);
@@ -134,7 +133,7 @@ const Coupons = () => {
                         {/* Submit Button */}
                         <div className="flex justify-center mt-8">
                             <button
-                                onClick={() => setShowModal(false)} // ✅ Close modal on click
+                                onClick={() => setShowModal(false)}
                                 className="bg-[#3F9224] text-white px-9 py-3 rounded-xl text-[120%] hover:bg-[#35801f] transition"
                             >
                                 Add Coupon

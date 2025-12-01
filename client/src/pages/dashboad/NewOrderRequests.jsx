@@ -129,7 +129,6 @@ const NewOrderRequests = () => {
                                 </p>
 
                                 {/* PRODUCT LIST */}
-                                {/* PRODUCT LIST - Horizontal Single Line with Scroll if needed */}
                                 <div className="mt-3">
                                     <div className="flex items-center gap-6 overflow-x-auto pb-1 scrollbar-hide">
                                         {order.services?.[0]?.products?.map((product, pIndex) => (

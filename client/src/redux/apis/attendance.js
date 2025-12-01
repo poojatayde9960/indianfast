@@ -30,6 +30,7 @@ export const attendanceApi = createApi({
                 }),
                 invalidatesTags: ["order"],
             }),
+
             getToggleAvailability: builder.mutation({
                 query: (data) => ({
                     url: "/get/toggle-availability",
@@ -41,10 +42,20 @@ export const attendanceApi = createApi({
                 }),
                 invalidatesTags: ["order"],
             }),
+            attendanceGetDashbord: builder.mutation({
+                query: (data) => ({
+                    url: "/get/dashbord",
+                    method: "POST",
+                    body: {
+                        ShopId: data.ShopId,
+                    },
+                }),
+                invalidatesTags: ["order"],
+            }),
 
 
         }
     }
 })
 
-export const { useToggleAvailabilityMutation, useGetToggleAvailabilityMutation } = attendanceApi
+export const { useToggleAvailabilityMutation, useGetToggleAvailabilityMutation, useAttendanceGetDashbordMutation } = attendanceApi

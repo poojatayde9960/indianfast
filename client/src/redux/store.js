@@ -30,8 +30,9 @@ import { attendanceApi } from "./apis/attendance.js";
 import { categoriesApi } from "./apis/categoriesApi";
 import { offerApi } from "./apis/offerApi";
 import { reviewApi } from "./apis/reviewApi";
+import { bankRequestApi } from "./apis/bankRequestApi.js";
 
-// 🔹 combine all reducers
+
 const rootReducer = combineReducers({
     auth: vendorSlice,
     [offerApi.reducerPath]: offerApi.reducer,
@@ -40,6 +41,7 @@ const rootReducer = combineReducers({
     [attendanceApi.reducerPath]: attendanceApi.reducer,
     [categoriesApi.reducerPath]: categoriesApi.reducer,
     [reviewApi.reducerPath]: reviewApi.reducer,
+    [bankRequestApi.reducerPath]: bankRequestApi.reducer,
 });
 
 // 🔹 persist config
@@ -56,8 +58,14 @@ export const store = configureStore({
     reducer: persistedReducer,
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware({
-            serializableCheck: false, // redux-persist 
-        }).concat(vendorApi.middleware, orderApi.middleware, attendanceApi.middleware, offerApi.middleware, categoriesApi.middleware, reviewApi.middleware),
+            serializableCheck: false,
+        }).concat(vendorApi.middleware,
+            orderApi.middleware,
+            attendanceApi.middleware,
+            offerApi.middleware,
+            categoriesApi.middleware,
+            reviewApi.middleware,
+            bankRequestApi.middleware),
 });
 
 export const persistor = persistStore(store);

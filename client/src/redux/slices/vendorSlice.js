@@ -30,8 +30,8 @@ const vendorSlice = createSlice({
     name: "vendor",
     initialState: {
         shopId: null,
-        isActive: false,        // Online / Offline status
-        checkInTime: null,      // Check-in time
+        isActive: false,
+        checkInTime: null,
     },
     reducers: {
         logout: (state) => {

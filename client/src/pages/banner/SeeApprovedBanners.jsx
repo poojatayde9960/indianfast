@@ -47,7 +47,6 @@ const SeeApprovedBanners = () => {
                             </div>
                         ))}
 
-                        {/* Shimmer Animation Style */}
                         <style>
                             {`
       .animate-shimmer {
@@ -66,10 +65,8 @@ const SeeApprovedBanners = () => {
                 {/* Error */}
                 {isError && <p>Failed to load banners</p>}
 
-                {/* No banners */}
                 {!isLoading && !banners.length && <p>No banners found</p>}
 
-                {/* Loaded banners */}
                 {!isLoading && banners.map((banner) => (
                     <div key={banner._id} className="flex flex-col items-center relative">
                         <img

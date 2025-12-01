@@ -13,7 +13,6 @@ const AddBanner = () => {
 
     const shopId = useSelector((state) => state.auth.shopId);
 
-    // Pass shopId dynamically to the query
     const { data: banners, isLoading, isError } = useGetBannerQuery(shopId);
 
     const navigate = useNavigate();
@@ -35,7 +34,6 @@ const AddBanner = () => {
 
         if (res?.data) {
             toast.success("Banner Added Successfully!");
-            // alert("Banner Added Successfully!");
             reset();
             setShowPopup(false);
         } else {
@@ -112,10 +110,7 @@ const AddBanner = () => {
                             src={banner.image}
                             className="rounded-[10px] w-[380px] h-[180px] object-cover shadow-md"
                         />
-                        {/* <Icon
-                            icon="mdi-light:delete"
-                            className="text-[#E10202] font-bold mt-3 text-[24px]"
-                        /> */}
+
                     </div>
                 ))}
             </div>
@@ -123,7 +118,6 @@ const AddBanner = () => {
 
 
 
-            {/* Popup Overlay */}
             {showPopup && (
                 <div
                     onClick={handleOverlayClick}

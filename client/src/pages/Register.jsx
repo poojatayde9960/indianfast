@@ -59,7 +59,6 @@ const Register = () => {
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState("");
 
-    // 📍 Function: Get user live location
     const handleGetLocation = () => {
         if (!navigator.geolocation) {
             setMessage("❌ Geolocation is not supported by your browser.");
@@ -99,7 +98,6 @@ const Register = () => {
         resolver: yupResolver(schema),
     });
 
-    // ✅ Auto-detect location
     useEffect(() => {
         navigator.geolocation.getCurrentPosition(
             (pos) => {
@@ -152,8 +150,6 @@ const Register = () => {
 
             <div className="absolute inset-0 bg-black/60"></div>
 
-            {/* Decorative Circles */}
-            {/* Decorative Circles - Hidden on mobile/tablet, visible on large screens */}
             <div className="hidden lg:block absolute top-24 right-20 rotate-[-45deg] translate-x-1/3 -translate-y-1/3 z-10">
                 <div
                     className="w-[300px] h-[300px] xl:w-[465px] xl:h-[465px] rounded-full flex items-center justify-center"
@@ -190,7 +186,6 @@ const Register = () => {
                     Vendor Registration
                 </h2>
 
-                {/* Scrollable content */}
                 <div className="flex-1 overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-[#FE9611] scrollbar-track-transparent">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 pb-4">
                         {/* Owner Info */}

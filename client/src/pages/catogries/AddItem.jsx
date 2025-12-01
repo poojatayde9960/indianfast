@@ -36,7 +36,7 @@ const AddItem = ({ searchTerm }) => {
         }
     }, [data, activeCategory]);
 
-    // **Open edit modal**
+
     const openEditModal = (item) => {
         setSelectedItem(item);
         setImageFile(null);
@@ -54,7 +54,7 @@ const AddItem = ({ searchTerm }) => {
         setEditModal(true);
     };
 
-    // **Image select**
+
     const handleImageChange = (e) => {
         const file = e.target.files[0];
         if (file) setImageFile(file);
@@ -249,9 +249,11 @@ const AddItem = ({ searchTerm }) => {
                                     <td className="py-4 px-5 font-medium text-black">{item.name}</td>
 
                                     <td className="py-4 px-5 text-gray-600">{item.description}</td>
-
-                                    <td className={`py-4 px-5 font-medium ${item.available === "Available" ? "text-green-600" : "text-red-600"}`}>
-                                        {item.available === "Available" ? "Available" : "Not Available"}
+                                    {/* <p className={`mt-2 font-medium ${item.available ? "text-green-600" : "text-red-600"}`}>
+                                        {item.available ? "Available" : "Not Available"}
+                                    </p> */}
+                                    <td className={`py-4 px-5 font-medium ${item.available ? "text-green-600" : "text-red-600"}`}>
+                                        {item.available ? "Available" : "Not Available"}
                                     </td>
 
                                     <td className="py-4 text-black px-5">{item.preparationTime} mins</td>
@@ -266,13 +268,31 @@ const AddItem = ({ searchTerm }) => {
                                             <button onClick={() => handleDelete(item._id)}>
                                                 <img src={deleteIcon} alt="delete" className="w-5 h-5" />
                                             </button>
-
+                                            {/*   <button
+                                        onClick={() => productToggle(item._id)}
+                                        disabled={toggleLoading}
+                                        className={`relative w-9 h-5 rounded-full transition-all ${item.available === true || item.available === "Available"
+                                            ? "bg-black"
+                                            : "bg-gray-400"
+                                            } ${toggleLoading ? "opacity-50" : ""}`}
+                                    >
+                                        <span
+                                            className={`absolute top-0.5 left-0.5 w-4 h-4 bg-orange-500 rounded-full transition-transform ${item.available === true || item.available === "Available"
+                                                ? "translate-x-4"
+                                                : ""
+                                                }`}
+                                        />
+                                    </button> */}
                                             <button
                                                 onClick={() => productToggle(item._id)}
                                                 disabled={toggleLoading}
-                                                className={`relative w-9 h-5 rounded-full transition-all ${item.available === "Available" ? "bg-black" : "bg-gray-400"} ${toggleLoading ? "opacity-50" : ""}`}
+                                                className={`relative w-9 h-5 rounded-full transition-all ${item.available === true || item.available === "Available"
+                                                    ? "bg-black"
+                                                    : "bg-gray-400"} ${toggleLoading ? "opacity-50" : ""}`}
                                             >
-                                                <span className={`absolute top-0.5 left-0.5 w-4 h-4 bg-orange-500 rounded-full transition-transform ${item.available === "Available" ? "translate-x-4" : ""}`} />
+                                                <span className={`absolute top-0.5 left-0.5 w-4 h-4 bg-orange-500 rounded-full transition-transform ${item.available === true || item.available === "Available"
+                                                    ? "translate-x-4"
+                                                    : ""}`} />
                                             </button>
                                         </div>
                                     </td>
@@ -282,7 +302,6 @@ const AddItem = ({ searchTerm }) => {
                     </tbody>
                 </table>
             </div>
-
             {/* Mobile / Tablet Card View */}
             <div className="md:hidden grid gap-4">
                 {filteredProducts.length === 0 ? (
@@ -298,36 +317,35 @@ const AddItem = ({ searchTerm }) => {
                 ) : (
                     filteredProducts.map(item => (
                         <div key={item._id} className="border rounded-xl p-4 shadow-sm flex gap-4">
-
                             <img src={item.image} alt="img" className="w-20 h-20 object-cover rounded-lg" />
-
                             <div className="flex flex-col flex-1">
                                 <h3 className="font-semibold text-black">{item.name}</h3>
                                 <p className="text-sm text-gray-600 mt-1">{item.description}</p>
-
                                 <p className={`mt-2 font-medium ${item.available ? "text-green-600" : "text-red-600"}`}>
                                     {item.available ? "Available" : "Not Available"}
                                 </p>
-
                                 <p className="text-sm mt-1 text-black">Prep: {item.preparationTime} mins</p>
                                 <p className="text-sm font-semibold text-black">Rs.{item.price}</p>
-
                                 <div className="flex items-center gap-4 mt-3">
                                     <button className="hover:scale-110" onClick={() => openEditModal(item)}>
                                         <img src={edit} alt="edit" className="w-5 h-5" />
                                     </button>
-
                                     <button onClick={() => handleDelete(item._id)}>
                                         <img src={deleteIcon} alt="delete" className="w-5 h-5" />
                                     </button>
-
                                     <button
                                         onClick={() => productToggle(item._id)}
                                         disabled={toggleLoading}
-                                        className={`relative w-10 h-5 rounded-full transition-all ${item.available ? "bg-black" : "bg-gray-400"} ${toggleLoading ? "opacity-50" : ""}`}
+                                        className={`relative w-9 h-5 rounded-full transition-all ${item.available === true || item.available === "Available"
+                                            ? "bg-black"
+                                            : "bg-gray-400"
+                                            } ${toggleLoading ? "opacity-50" : ""}`}
                                     >
                                         <span
-                                            className={`absolute top-0.5 left-0.5 w-4 h-4 bg-orange-500 rounded-full transition-transform ${item.available ? "translate-x-5" : ""}`}
+                                            className={`absolute top-0.5 left-0.5 w-4 h-4 bg-orange-500 rounded-full transition-transform ${item.available === true || item.available === "Available"
+                                                ? "translate-x-4"
+                                                : ""
+                                                }`}
                                         />
                                     </button>
                                 </div>

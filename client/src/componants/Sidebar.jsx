@@ -17,7 +17,7 @@ const Sidebar = ({ setPageTitle }) => {
     const location = useLocation();
 
     const [active, setActive] = useState("Dashboard");
-    const [isOpen, setIsOpen] = useState(false); // ✅ mobile menu toggle
+    const [isOpen, setIsOpen] = useState(false);
     useEffect(() => {
         const handleClickOutside = (e) => {
             const isTablet = window.innerWidth >= 768 && window.innerWidth < 1024;
@@ -68,7 +68,7 @@ const Sidebar = ({ setPageTitle }) => {
     return (
         <>
             {/* <pre>{JSON.stringify(data, null, 2)}</pre> */}
-            {/* 🔹 Mobile Top Bar */}
+
             <div className="lg:hidden fixed top-0 left-0 right-0 z-50 bg-white shadow-md flex items-center justify-between px-4 py-2">
                 <div className="flex items-center gap-2">
                     <img src={techsurya} alt="Logo" className="w-24 object-contain" />
@@ -92,8 +92,7 @@ const Sidebar = ({ setPageTitle }) => {
                 bg-red-100`}
             >
                 <div className="w-72 md:w-60 lg:w-72 flex flex-col">
-                    {/* 🔹 Top Section */}
-                    {/* 🔹 Top Section */}
+
                     <div className="bg-white pb-4 -mt-2 flex flex-col items-center border-b border-gray-200">
                         <img src={techsurya} alt="Logo" className="w-48 -mb-7" />
 
@@ -118,7 +117,6 @@ const Sidebar = ({ setPageTitle }) => {
 
 
                     {/* 🔸 Menu Section */}
-                    {/* <div className="flex-1 bg-gradient-to-b  from-[#EF9C01] to-[#FF9129] text-white flex flex-col justify-between"> */}
                     <div
                         className="flex-1 bg-gradient-to-b from-[#EF9C01] to-[#FF9129] text-white flex flex-col justify-between relative"
                         style={{
@@ -335,20 +333,20 @@ const Sidebar = ({ setPageTitle }) => {
 
                                 {/* Coupon Code */}
                                 <Link
-                                    to="/coupons"
+                                    to="/paymentRequest"
                                     onClick={() => {
-                                        setPageTitle("Coupon Code");
-                                        setActive("Coupon Code");
+                                        setPageTitle("paymentRequest");
+                                        setActive("paymentRequest");
                                         setIsOpen(false);
                                     }}
                                 >
-                                    {/* <li
-                                        className={`relative flex gap-3 py-2 px-3 cursor-pointer ${active === "Coupon Code"
+                                    <li
+                                        className={`relative flex gap-3 py-2 px-3 cursor-pointer ${active === "paymentRequest"
                                             ? "bg-white/15"
                                             : "hover:bg-white/10"
                                             }`}
                                     >
-                                        {active === "Coupon Code" && (
+                                        {active === "paymentRequest" && (
                                             <span
                                                 className="absolute -right-4 top-1/2 -translate-y-1/2 w-0 h-0 
                                             border-t-[10px] border-t-transparent 
@@ -357,25 +355,24 @@ const Sidebar = ({ setPageTitle }) => {
                                             ></span>
                                         )}
                                         <Icon icon="mdi:coupon-outline" className=" w-6 h-6 sm:w-7 sm:h-7 " />
-                                        Coupon Code
-                                    </li> */}
+                                        Payment Request
+                                    </li>
                                 </Link>
+                                {/* Bottom Section */}
+                                <div className="flex items-center">
+                                    <p className="text-[#FFFFFF] text-sm whitespace-nowrap">
+                                        Partner with
+                                    </p>
+                                    <img
+                                        src={indianFast}
+                                        alt="Indian Fast"
+                                        className="w-32 md:w-36 h-auto object-contain"
+                                    />
+                                </div>
                             </ul>
                         </div>
 
-                        {/* Bottom Section */}
-                        <div className="p-5 mt-16 mb-6 flex items-center justify-center">
-                            <div className="flex items-center gap-3">
-                                <p className="text-[#FFFFFF] -mr-3 text-[100%] mt-1">
-                                    Partner with
-                                </p>
-                                <img
-                                    src={indianFast}
-                                    alt="Indian Fast"
-                                    className="w-[59%] h-auto object-contain mb-4"
-                                />
-                            </div>
-                        </div>
+
                     </div>
                 </div>
             </div>

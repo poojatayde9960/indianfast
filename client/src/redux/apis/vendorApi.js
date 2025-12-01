@@ -12,7 +12,7 @@ export const vendorApi = createApi({
         return {
             getProfile: builder.query({
                 query: (shopId) => ({
-                    url: `/get/${shopId}`, // shopId dynamic
+                    url: `/get/${shopId}`,
                     method: "GET",
                 }),
                 providesTags: ["vendor"],
