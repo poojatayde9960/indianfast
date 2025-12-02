@@ -118,42 +118,9 @@ const Dashboard = () => {
             alert("Failed to update availability. Please try again.");
         }
     };
-    useEffect(() => {
-        let currentShopId = shopId;
-        if (!currentShopId) {
-            const stored = localStorage.getItem("shopId");
-            if (stored) {
-                try {
-                    const parsed = JSON.parse(stored);
-                    currentShopId = parsed.shopId || parsed.result?.shopId || parsed;
-                } catch (e) {
-                    console.error("Error parsing shopId from localStorage:", e);
-                }
-            }
-        }
-        if (currentShopId) {
-            console.log("Calling get/dashbord with ShopId:", currentShopId);
-            attendanceGetDashbord({ ShopId: currentShopId })
-                .unwrap()
-                .then((response) => {
-                    console.log("Dashboard Status Response:", response);
-                    const data = response.result || response;
 
-                    if (data) {
-                        const isOnline = data.availabilityStatus === "Open" || data.currentSessionInfo?.hasOngoingSession;
-                        dispatch(setActive(isOnline));
 
-                        const checkIn = data.currentSessionInfo?.checkInTime;
-                        dispatch(setCheckInTime(checkIn));
-                    }
-                })
-                .catch((error) => {
-                    console.error("Failed to fetch dashboard status:", error);
-                });
-        } else {
-            console.warn("No ShopId found (in Redux or localStorage), skipping get/dashbord call.");
-        }
-    }, [shopId, attendanceGetDashbord, dispatch]);
+
     const [duration, setDuration] = useState("00 : 00 : 00");
     useEffect(() => {
         if (!isActive) {

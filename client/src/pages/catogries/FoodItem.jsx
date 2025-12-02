@@ -255,52 +255,56 @@ const FoodItem = () => {
 
             {/* =================== ITEM MODAL =================== */}
             {showItemModal && (
-                <div className="fixed inset-0 flex items-center text-black justify-center bg-black/40 z-50 px-4 sm:px-6">
-                    {/* <pre>{JSON.stringify(data, null, 2)}</pre> */}
+                <div className="fixed inset-0 z-50 flex items-start text-black justify-center bg-black/40 px-3 pt-4 pb-8 overflow-y-auto">
+                    {/* items-start + pt-4 → modal top la nahi chikat, scroll comfortable */}
                     <form
                         onSubmit={handleSubmitItem(onSubmitItem)}
-                        className="bg-white rounded-2xl w-full max-w-[600px] sm:max-w-[650px] md:max-w-[50%] p-6 sm:p-7 shadow-lg relative animate-fadeIn"
+                        className="bg-white rounded-2xl w-full max-w-[500px] sm:max-w-[650px] md:max-w-[50%] p-5 sm:p-6 md:p-7 shadow-lg relative max-h-[90vh] overflow-y-auto"
+                        onClick={(e) => e.stopPropagation()}
+                    // className="bg-white rounded-2xl w-full sm:max-w-[650px] md:max-w-[50%] p-6 sm:p-7 shadow-lg relative animate-fadeIn"
                     >
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                        {/* <div className="grid grid-cols-1 sm:grid-cols-2 gap-6"></div> */}
+                        {/* > */}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 sm:gap-6">
 
                             <div>
-                                <label>Item Name</label>
+                                <label className="block mb-1 text-sm">Item Name</label>
                                 <input
                                     type="text"
                                     placeholder="Item Name"
                                     {...registerItem("itemName", { required: "Item name required" })}
-                                    className="w-full border border-[#D9D9D9] px-4 py-4 rounded-md"
+                                    className="w-full border border-[#D9D9D9] px-4 py-4 rounded-md text-base"
                                 />
                                 {itemErrors.itemName && (
-                                    <p className="text-red-500 text-sm">{itemErrors.itemName.message}</p>
+                                    <p className="text-red-500 text-sm mt-1">{itemErrors.itemName.message}</p>
                                 )}
                             </div>
 
                             <div>
-                                <label>Description</label>
+                                <label className="block mb-1 text-sm">Description</label>
                                 <input
                                     type="text"
                                     placeholder="Description"
                                     {...registerItem("description")}
-                                    className="w-full border border-[#D9D9D9] px-4 py-4 rounded-md"
+                                    className="w-full border border-[#D9D9D9] px-4 py-4 rounded-md text-base"
                                 />
                             </div>
 
                             <div>
-                                <label>Price</label>
+                                <label className="block mb-1 text-sm">Price</label>
                                 <input
                                     type="number"
                                     placeholder="number"
                                     {...registerItem("price")}
-                                    className="w-full border border-[#D9D9D9] px-4 py-4 rounded-md"
+                                    className="w-full border border-[#D9D9D9] px-4 py-4 rounded-md text-base"
                                 />
                             </div>
 
                             <div>
-                                <label> Category</label>
+                                <label className="block mb-1 text-sm">Category</label>
                                 <select
                                     {...registerItem("category")}
-                                    className="w-full border border-[#D9D9D9] px-4 py-4 rounded-md"
+                                    className="w-full border border-[#D9D9D9] px-4 py-4 rounded-md text-base"
                                     defaultValue=""
                                 >
                                     <option value="" disabled>Select category</option>
@@ -310,20 +314,20 @@ const FoodItem = () => {
                             </div>
 
                             <div>
-                                <label>Preparation Time</label>
+                                <label className="block mb-1 text-sm">Preparation Time</label>
                                 <input
                                     type="text"
                                     placeholder="preparation Time"
                                     {...registerItem("preparationTime")}
-                                    className="w-full border border-[#D9D9D9] px-4 py-4 rounded-md"
+                                    className="w-full border border-[#D9D9D9] px-4 py-4 rounded-md text-base"
                                 />
                             </div>
 
                             <div>
-                                <label className="font-medium">Select Food Category</label>
+                                <label className="block mb-1 text-sm font-medium">Select Food Category</label>
                                 <select
                                     {...registerItem("foodType", { required: "Category is required" })}
-                                    className="w-full border border-[#D9D9D9] px-4 py-4 rounded-md bg-white custom-option-height"
+                                    className="w-full border border-[#D9D9D9] px-4 py-4 rounded-md bg-white text-base"
                                     value={selectedFoodCategory}
                                     onChange={(e) => setSelectedFoodCategory(e.target.value)}
                                 >
@@ -334,21 +338,19 @@ const FoodItem = () => {
                                         </option>
                                     ))}
                                 </select>
-
                                 {itemErrors.foodType && (
-                                    <p className="text-red-500 text-sm">{itemErrors.foodType.message}</p>
+                                    <p className="text-red-500 text-sm mt-1">{itemErrors.foodType.message}</p>
                                 )}
                             </div>
 
-
-
-                            <div>
-                                <label>Upload Image</label>
-                                <label className="w-full border border-dashed border-[#B4B4B4CC] rounded-md flex items-center justify-center px-4 py-[14px] cursor-pointer">
+                            <div className="sm:col-span-2">
+                                <label className="block mb-2 text-sm">Upload Image</label>
+                                <label className="w-full border border-dashed border-[#B4B4B4CC] rounded-md flex items-center justify-center px-4 py-[14px] cursor-pointer hover:bg-gray-50 transition">
                                     <Icon icon="mdi:upload" className="text-[#B4B4B4CC] w-6 h-6 mr-2" />
-                                    <span>Upload Image of food</span>
+                                    <span className="text-sm">Upload Image of food</span>
                                     <input
                                         type="file"
+                                        accept="image/*"
                                         {...registerItem("itemImage")}
                                         className="hidden"
                                     />
@@ -356,37 +358,37 @@ const FoodItem = () => {
                             </div>
 
                             <div>
-                                <label>GST</label>
+                                <label className="block mb-1 text-sm">GST</label>
                                 <input
                                     type="number"
                                     {...registerItem("gst")}
-                                    className="w-full border border-[#D9D9D9] px-4 py-4 rounded-md"
+                                    className="w-full border border-[#D9D9D9] px-4 py-4 rounded-md text-base"
                                 />
                             </div>
 
                             <div>
-                                <label>Discount</label>
+                                <label className="block mb-1 text-sm">Discount</label>
                                 <input
                                     type="number"
                                     {...registerItem("discount")}
-                                    className="w-full border border-[#D9D9D9] px-4 py-4 rounded-md"
+                                    className="w-full border border-[#D9D9D9] px-4 py-4 rounded-md text-base"
                                 />
                             </div>
 
                         </div>
 
-                        <div className="flex justify-center gap-6 mt-10">
+                        {/* Buttons - Mobile var full width, stacked */}
+                        <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 mt-8 sm:mt-10">
                             <button
                                 type="button"
                                 onClick={() => setShowItemModal(false)}
-                                className="w-[170px] py-3 border border-[#FF6F00] text-[#FF6F00] rounded-sm"
+                                className="w-full sm:w-[170px] py-3 border border-[#FF6F00] text-[#FF6F00] rounded-sm font-medium hover:bg-orange-50 transition"
                             >
                                 Cancel
                             </button>
-
                             <button
                                 type="submit"
-                                className="w-[170px] py-3 text-white rounded-sm bg-gradient-to-r from-[#FF6F00] to-[#FF9933]"
+                                className="w-full sm:w-[170px] py-3 text-white rounded-sm bg-gradient-to-r from-[#FF6F00] to-[#FF9933] font-medium"
                             >
                                 Add Item
                             </button>
