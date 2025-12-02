@@ -118,7 +118,9 @@ const FoodItem = () => {
         }
     };
 
-    return (
+    return <>
+
+        {/* <pre className="text-black">{JSON.stringify(data, null, 2)}</pre> */}
         <div className="p-4 sm:p-5 md:p-6 bg-[#F5F5F5] mt-20 min-h-[calc(100vh-80px)] md:h-[calc(100vh-80px)] overflow-y-auto transition-all duration-500">
 
             {/* Top Cards */}
@@ -146,7 +148,7 @@ const FoodItem = () => {
                     </div>
 
                     <div>
-                        <h2 className="text-xl sm:text-2xl md:text-3xl text-gray-900 -mt-2 md:-mt-3">10</h2>
+                        <h2 className="text-xl sm:text-2xl md:text-3xl text-gray-900 -mt-2 md:-mt-3">  {data?.length || 0}</h2>
 
                         <span
                             onClick={(e) => {
@@ -183,7 +185,7 @@ const FoodItem = () => {
                     </div>
 
                     <div>
-                        <h2 className="text-xl sm:text-2xl md:text-3xl text-gray-900 -mt-2 md:-mt-3">100</h2>
+                        <h2 className="text-xl sm:text-2xl md:text-3xl text-gray-900 -mt-2 md:-mt-3">{data?.reduce((total, cat) => total + (cat.products?.length || 0), 0) || 0}</h2>
 
                         <span
                             onClick={(e) => {
@@ -398,7 +400,7 @@ const FoodItem = () => {
             )}
 
         </div>
-    );
+    </>
 };
 
 export default FoodItem;

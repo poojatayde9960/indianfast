@@ -84,34 +84,76 @@ const AddItem = ({ searchTerm }) => {
             : data?.find(cat => cat.category_name === activeCategory)?.products) || [];
 
     // ******************************************************
-    //               ⭐ FINAL EDIT SUBMIT FIX ⭐
-    // ******************************************************
-    const onSubmitEdit = async (values) => {
-        try {
-            const formData = new FormData();
 
-            Object.keys(values).forEach(key => {
-                formData.append(key, values[key]);
-            });
+    // const onSubmitEdit = async (values) => {
+    //     try {
+    //         const formData = new FormData();
+
+    //         Object.keys(values).forEach(key => {
+    //             formData.append(key, values[key]);
+    //         });
+
+    //         if (imageFile) {
+    //             formData.append("image", imageFile);
+    //         }
+
+    //         const { name, description, price, preparationTime } = formData;
+
+    //         const dataToSend = {
+    //             name, description, price, preparationTime
+    //         }
+    //         await editProduct({ id: selectedItem._id, formData: dataToSend }).unwrap();
+
+    //         alert("Updated successfully");
+    //         setEditModal(false);
+    //     } catch (err) {
+    //         alert(err?.data?.message || "Update failed");
+    //     }
+    // };
+    const onSubmitEdit = async (data) => {
+        if (!selectedItem?._id) return;
+
+        try {
+            let dataToSend;
 
             if (imageFile) {
+                const formData = new FormData();
+                formData.append("name", data.name?.trim() || "");
+                formData.append("description", data.description?.trim() || "");
+                formData.append("price", data.price || 0);
+                formData.append("preparationTime", data.preparationTime || 0);
+                formData.append("gst", data.gst || 0);
+                formData.append("discountedPrice", data.discountedPrice || 0);
+                formData.append("category_name", data.category_name || selectedItem.category_name);
                 formData.append("image", imageFile);
+                dataToSend = formData;
+            } else {
+                dataToSend = {
+                    name: data.name?.trim() || "",
+                    description: data.description?.trim() || "",
+                    price: Number(data.price) || 0,
+                    preparationTime: Number(data.preparationTime) || 0,
+                    gst: Number(data.gst) || 0,
+                    discountedPrice: Number(data.discountedPrice) || 0,
+                    category_name: data.category_name || selectedItem.category_name
+                };
             }
 
-            const { name, description, price, preparationTime } = formData;
+            await editProduct({
+                id: selectedItem._id,
+                formData: dataToSend
+            }).unwrap();
 
-            const dataToSend = {
-                name, description, price, preparationTime
-            }
-            await editProduct({ id: selectedItem._id, formData: dataToSend }).unwrap();
-
-            alert("Updated successfully");
+            toast.success("Item updated successfully!");
             setEditModal(false);
+            reset();
+            setImageFile(null);
+
         } catch (err) {
-            alert(err?.data?.message || "Update failed");
+            console.error(err);
+            toast.error(err?.data?.message || "Update failed");
         }
     };
-
     if (isLoading) {
         return (
             <div className="bg-white rounded-[15px] border shadow p-5 animate-pulse">

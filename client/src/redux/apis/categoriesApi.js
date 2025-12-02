@@ -51,6 +51,15 @@ export const categoriesApi = createApi({
                 }),
                 invalidatesTags: ["categories"],
             }),
+            // /vendor/categories/update/:id
+            editCategories: builder.mutation({
+                query: ({ id, formData }) => ({
+                    url: `/update/${id}`,
+                    method: "PUT",
+                    body: formData,
+                }),
+                invalidatesTags: ["categories"],
+            }),
 
 
             deleteCategory: builder.mutation({
@@ -63,17 +72,17 @@ export const categoriesApi = createApi({
 
             productToggle: builder.mutation({
                 query: (productId) => ({
-                    url: `/toggle/${productId}`,  // dynamic product id
+                    url: `/toggle/${productId}`,  // 
                     method: "PATCH",
                 }),
                 async onQueryStarted(productId, { dispatch, queryFulfilled }) {
-                    // Optimistic toggle
+
                     const patchResult = dispatch(
                         categoriesApi.util.updateQueryData('getAllCategories', undefined, (draft) => {
                             draft.forEach(cat => {
                                 const product = cat.products.find(p => p._id === productId);
                                 if (product) {
-                                    product.available = !product.available;  // real toggle in cache
+                                    product.available = !product.available;
                                 }
                             });
                         })
@@ -82,7 +91,7 @@ export const categoriesApi = createApi({
                     try {
                         await queryFulfilled;
                     } catch {
-                        patchResult.undo(); // error आला तर revert
+                        patchResult.undo();
                     }
                 }
             }),
@@ -92,4 +101,4 @@ export const categoriesApi = createApi({
 })
 
 export const { useCategoriesAddMutation, useGetAllCategoriesQuery, useAddProductMutation, useProductToggleMutation,
-    useDeleteProductMutation, useDeleteCategoryMutation, useEditProductMutation } = categoriesApi
+    useDeleteProductMutation, useDeleteCategoryMutation, useEditProductMutation, useEditCategoriesMutation } = categoriesApi

@@ -10,19 +10,19 @@ import { useSelector } from "react-redux";
 const Sidebar = ({ setPageTitle }) => {
 
     const sidebarRef = useRef();
-
-
     const shopId = useSelector((state) => state.auth.shopId);
     const { data, isLoading, isError } = useGetProfileQuery(shopId);
     const location = useLocation();
-
     const [active, setActive] = useState("Dashboard");
     const [isOpen, setIsOpen] = useState(false);
     useEffect(() => {
+        const handler = () => setShowProfile(true);
+        window.addEventListener("open-mobile-profile", handler);
+        return () => window.removeEventListener("open-mobile-profile", handler);
+    }, []);
+    useEffect(() => {
         const handleClickOutside = (e) => {
             const isTablet = window.innerWidth >= 768 && window.innerWidth < 1024;
-
-
             if (isOpen && isTablet && sidebarRef.current && !sidebarRef.current.contains(e.target)) {
                 setIsOpen(false);
             }
@@ -71,7 +71,7 @@ const Sidebar = ({ setPageTitle }) => {
 
             <div className="lg:hidden fixed top-0 left-0 right-0 z-50 bg-white shadow-md flex items-center justify-between px-4 py-2">
                 <div className="flex items-center gap-2">
-                    <img src={techsurya} alt="Logo" className="w-24 object-contain" />
+                    <img src={indianFast} alt="Logo" className="w-16 object-contain" />
                 </div>
                 <button
                     onClick={() => setIsOpen(!isOpen)}
@@ -93,14 +93,25 @@ const Sidebar = ({ setPageTitle }) => {
             >
                 <div className="w-72 md:w-60 lg:w-72 flex flex-col">
 
-                    <div className="bg-white pb-4 -mt-2 flex flex-col items-center border-b border-gray-200">
-                        <img src={techsurya} alt="Logo" className="w-48 -mb-7" />
+                    <div className="bg-white pb-4 -mt-15 flex flex-col items-center border-b border-gray-200">
+                        <img src={indianFast} alt="Logo" className="w-48 -mb-7" />
 
                         {/* Profile Image from API */}
-                        <img
+                        {/* <img
                             src={data?.shop?.hotelImage || img1}
                             alt="Profile"
                             className="w-14 h-14 mb-2 rounded-full"
+                        /> */}
+                        <img
+                            src={data?.shop?.hotelImage || img1}
+                            alt="Profile"
+                            className="w-14 h-14 mb-2 rounded-full cursor-pointer border-4 border-white shadow-lg hover:scale-105 transition"
+                            onClick={() => {
+                                if (window.innerWidth < 1024) {
+                                    window.dispatchEvent(new Event("open-mobile-profile"));
+                                    setIsOpen(false); // 
+                                }
+                            }}
                         />
 
                         {/* Hotel Name from API */}
@@ -116,13 +127,11 @@ const Sidebar = ({ setPageTitle }) => {
                     </div>
 
 
-                    {/* 🔸 Menu Section */}
                     <div
                         className="flex-1 bg-gradient-to-b from-[#EF9C01] to-[#FF9129] text-white flex flex-col justify-between relative"
                         style={{
                             minHeight: "100vh",
                             height: "100%",
-                            // Tablet var force height vadhavto
                             "@media (min-width: 768px) and (max-width: 1023px)": {
                                 height: "138vh"
                             }

@@ -1,15 +1,26 @@
 import React, { useState } from "react";
 import edit from "/edit.png";
 import deleteIcon from "/delete.png";
-import { useDeleteCategoryMutation, useGetAllCategoriesQuery } from "../../redux/apis/categoriesApi";
+import { useDeleteCategoryMutation, useEditCategoriesMutation, useGetAllCategoriesQuery } from "../../redux/apis/categoriesApi";
 import { toast } from "react-toastify";
-
+import { Icon } from "@iconify/react";
+import { useForm } from "react-hook-form";
 const AddCategories = ({ searchTerm }) => {
+    const [editCategories] = useEditCategoriesMutation()
     const { data, isLoading } = useGetAllCategoriesQuery();
     const [deleteCategory] = useDeleteCategoryMutation()
     const [showModal, setShowModal] = useState(false);
     const [selectedCategory, setSelectedCategory] = useState(null);
     const [categoryName, setCategoryName] = useState("");
+    const [editImageFile, setEditImageFile] = useState(null);
+
+    const {
+        register: registerEdit,
+        handleSubmit: handleSubmitEdit,
+        formState: { errors: editErrors },
+        reset: resetEdit,
+        setValue
+    } = useForm();
 
     console.log("API DATA → ", data);
     const handleDelete = async (id) => {
@@ -104,15 +115,39 @@ const AddCategories = ({ searchTerm }) => {
 
         return categoryMatch || productMatch;
     });
-
     const handleEdit = (cat) => {
         setSelectedCategory(cat);
-        setCategoryName(cat.category_name);
+        setValue("name", cat.category_name);
+        setEditImageFile(null);
         setShowModal(true);
     };
+    const onSubmitEdit = async (formData) => {
+        try {
+            const payload = new FormData();
+            payload.append("category_name", formData.name.trim());
 
+            if (editImageFile) {
+                payload.append("image", editImageFile);
+            }
+
+            await editCategories({
+                id: selectedCategory._id,
+                formData: payload
+            }).unwrap();
+
+            toast.success("Category updated successfully!");
+            setShowModal(false);
+            setSelectedCategory(null);
+            setEditImageFile(null);
+            resetEdit();
+
+        } catch (err) {
+            toast.error(err?.data?.message || "Update failed");
+        }
+    };
     return (
         <>
+            {/* <pre className="text-black">{JSON.stringify(data, null, 2)}</pre> */}
             <div>
                 <h2 className="text-lg font-semibold text-gray-800">All Categories</h2>
                 <div className="bg-white rounded-2xl mt-8 shadow-md p-6 w-full mb-6">
@@ -251,6 +286,73 @@ const AddCategories = ({ searchTerm }) => {
                 </div>
 
             </div>
+            {showModal && selectedCategory && (
+                <div className="fixed inset-0 z-50 text-black flex items-center justify-center bg-black/40 px-4">
+                    <div className="bg-white rounded-2xl w-full max-w-[420px] p-6 shadow-xl animate-fadeIn">
+
+                        <h2 className="text-xl font-semibold text-center mb-6">Edit Category</h2>
+
+                        {/* ✅ FORM TAG + handleSubmitEdit */}
+                        <form onSubmit={handleSubmitEdit(onSubmitEdit)}>
+
+                            {/* Category Name */}
+                            <div className="mb-5">
+                                <input
+                                    type="text"
+                                    {...registerEdit("name", { required: "Category name is required" })}
+                                    placeholder="e.g. Starters"
+                                    className="w-full border border-[#D9D9D9] px-4 py-3 rounded-md focus:outline-none focus:border-orange-500"
+                                />
+                                {editErrors.name && <p className="text-red-500 text-xs mt-1">{editErrors.name.message}</p>}
+                            </div>
+
+                            {/* Upload New Image */}
+                            <label className="block mb-6 cursor-pointer">
+                                <div className="border-2 border-dashed border-[#B4B4B4CC] rounded-lg py-8 text-center hover:bg-gray-50 transition">
+                                    <Icon icon="mdi:upload" className="mx-auto text-[#B4B4B4CC] w-10 h-10 mb-2" />
+                                    <p className="text-sm text-[#5E5E5E]">Upload new image (optional)</p>
+                                </div>
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    className="hidden"
+                                    onChange={(e) => e.target.files[0] && setEditImageFile(e.target.files[0])}
+                                />
+                            </label>
+
+                            {editImageFile && (
+                                <p className="text-sm text-green-600 text-center mb-4">
+                                    Selected: {editImageFile.name}
+                                </p>
+                            )}
+
+                            {/* Buttons */}
+                            <div className="flex gap-4">
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        setShowModal(false);
+                                        setSelectedCategory(null);
+                                        setEditImageFile(null);
+                                        resetEdit();
+                                    }}
+                                    className="flex-1 py-3 border border-[#FF6F00] text-[#FF6F00] rounded-md font-medium hover:bg-orange-50"
+                                >
+                                    Cancel
+                                </button>
+
+                                {/* ✅ type="submit" + form submit hoil */}
+                                <button
+                                    type="submit"
+                                    className="flex-1 py-3 bg-gradient-to-r from-[#FF6F00] to-[#FF9933] text-white rounded-md font-medium"
+                                >
+                                    Update Category
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
         </>
     );
 };

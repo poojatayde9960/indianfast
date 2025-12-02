@@ -132,11 +132,33 @@ const AttendanceTimer = () => {
                 <div className="flex flex-col gap-6 w-full lg:w-[40%]">
 
                     {/* Calendar */}
-                    <div className="bg-white rounded-2xl h-[96%] p-4 sm:p-6 shadow-lg flex flex-col ">
-                        <h2 className="text-xl sm:text-2xl font-semibold font-Poppins text-[#333333] mb-4 text-center lg:text-left">
-                            {format(selectedDate, "MMMM yyyy")}
-                        </h2>
+                    <div className="bg-white rounded-2xl h-[96%] p-4 sm:p-6 shadow-lg flex flex-col">
+                        {/* Header with Navigation */}
+                        <div className="flex items-center justify-between mb-4">
+                            <button
+                                onClick={() => setSelectedDate(new Date(selectedDate.getFullYear(), selectedDate.getMonth() - 1))}
+                                className="p-2 hover:bg-gray-100 rounded-full transition"
+                            >
+                                <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                                </svg>
+                            </button>
 
+                            <h2 className="text-xl sm:text-2xl font-semibold font-Poppins text-[#333333]">
+                                {format(selectedDate, "MMMM yyyy")}
+                            </h2>
+
+                            <button
+                                onClick={() => setSelectedDate(new Date(selectedDate.getFullYear(), selectedDate.getMonth() + 1))}
+                                className="p-2 hover:bg-gray-100 rounded-full transition"
+                            >
+                                <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                </svg>
+                            </button>
+                        </div>
+
+                        {/* Rest of calendar */}
                         <div className="grid grid-cols-7 gap-1 text-center text-gray-700">
                             {/* Week days */}
                             {["M", "T", "W", "T", "F", "S", "S"].map((day) => (
@@ -145,6 +167,7 @@ const AttendanceTimer = () => {
                                 </div>
                             ))}
 
+                            {/* Empty cells before first day */}
                             {Array.from({ length: startDayOfWeek === 0 ? 6 : startDayOfWeek - 1 }).map((_, i) => (
                                 <div key={`empty-${i}`} />
                             ))}
@@ -159,12 +182,12 @@ const AttendanceTimer = () => {
                                         key={day.toISOString()}
                                         onClick={() => setSelectedDate(day)}
                                         className={`
-                                          w-8 h-8 sm:w-10 sm:h-10 mx-auto flex items-center justify-center 
-                                          rounded-full text-xs sm:text-sm cursor-pointer transition-all
-                                          ${isSelected ? "bg-[#FF8D28] text-white font-bold" : ""}
-                                          ${isToday && !isSelected ? "bg-blue-100 text-blue-700 font-bold" : ""}
-                                          ${!isSelected && !isToday ? "hover:bg-gray-100 text-[#333333]" : ""}
-                                        `}
+                        w-8 h-8 sm:w-10 sm:h-10 mx-auto flex items-center justify-center 
+                        rounded-full text-xs sm:text-sm cursor-pointer transition-all
+                        ${isSelected ? "bg-[#FF8D28] text-white font-bold" : ""}
+                        ${isToday && !isSelected ? "bg-blue-100 text-blue-700 font-bold" : ""}
+                        ${!isSelected && !isToday ? "hover:bg-gray-100 text-[#333333]" : ""}
+                    `}
                                     >
                                         {format(day, "d")}
                                     </div>

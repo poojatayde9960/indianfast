@@ -1,5 +1,5 @@
 import { Icon } from "@iconify/react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import img1 from "/img1.png";
 import techsurya from "/techsurya.png";
 import { useLocation } from "react-router-dom";
@@ -12,6 +12,11 @@ import { useGetToggleAvailabilityMutation } from "../redux/apis/attendance";
 
 const Navbar = ({ title, searchTerm, setSearchTerm }) => {
     const [getToggleAvailability, { data: toggleData, isLoading: toggleIsLoading, error }] = useGetToggleAvailabilityMutation();
+    useEffect(() => {
+        const handler = () => setShowProfile(true);
+        window.addEventListener("open-mobile-profile", handler);
+        return () => window.removeEventListener("open-mobile-profile", handler);
+    }, []);
     const handleToggleAvailability = async () => {
         if (!shopId) return alert("Shop ID not found!");
 
@@ -27,6 +32,9 @@ const Navbar = ({ title, searchTerm, setSearchTerm }) => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const [vendorLogout] = useVendorLogoutMutation()
+
+
+
     const handleLogout = async () => {
         try {
             await vendorLogout(shopId).unwrap();
@@ -140,10 +148,10 @@ const Navbar = ({ title, searchTerm, setSearchTerm }) => {
 
             {/* Profile Sidebar */}
             <div
-                className={`fixed top-0 right-0 h-full w-[85%] sm:w-[320px] bg-white shadow-lg transform transition-transform duration-300 z-50 ${showProfile ? "translate-x-0" : "translate-x-full"
+                className={`fixed top-0 right-0 h-full   w-[85%] sm:w-[320px] bg-white shadow-lg transform transition-transform duration-300 z-50 ${showProfile ? "translate-x-0" : "translate-x-full"
                     }`}
             >
-                <div className="flex flex-col items-center mt-10 px-6">
+                <div className="flex flex-col items-center pt-24 md:pt-32 lg:pt-20 px-6">
                     {/* <img src={techsurya} alt="Logo" className="w-40 md:w-48 h-28 md:h-36 -mb-4" /> */}
                     <img src={data?.shop?.hotelImage || img1} alt="User" className="text-black w-14 md:w-16 h-14 md:h-16 mt-2" />
 
