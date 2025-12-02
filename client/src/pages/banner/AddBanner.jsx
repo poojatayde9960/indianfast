@@ -157,7 +157,7 @@ const AddBanner = () => {
                             </div>
 
                         </form>
-                        {/* FORM END */}
+
 
                     </div>
                 </div>

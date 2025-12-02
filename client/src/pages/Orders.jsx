@@ -258,7 +258,7 @@ const Orders = () => {
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center w-full text-[17px] text-[#808080] relative gap-4 md:gap-0">
 
                 {/* LEFT SIDE - Tabs */}
-                <div className="flex gap-6 md:gap-15 items-center whitespace-nowrap overflow-x-auto lg:overflow-visible w-full md:w-auto pb-2 md:pb-0 scrollbar-hide">
+                <div className="flex gap-6 md:gap-10 items-center whitespace-nowrap overflow-x-auto lg:overflow-visible w-full md:w-auto pb-2 md:pb-0 scrollbar-hide">
                     {tabs.map(tab => (
                         <span
                             key={tab}

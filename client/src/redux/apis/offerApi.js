@@ -6,7 +6,7 @@ export const offerApi = createApi({
         baseUrl: `${import.meta.env.VITE_BACKEND_URL || "http://localhost:5000"}/vendor/offer`,
         credentials: "include"
     }),
-    tagTypes: ["order"],
+    tagTypes: ["offer"],
     endpoints: (builder) => {
         return {
 
@@ -15,7 +15,7 @@ export const offerApi = createApi({
                     url: `/getby/${shopId}`,
                     method: "GET",
                 }),
-                providesTags: ["order"],
+                providesTags: ["offer"],
             }),
 
 
@@ -32,7 +32,7 @@ export const offerApi = createApi({
                     url: `/delete/${id}`,
                     method: "DELETE",
                 }),
-                invalidatesTags: ["categories"],
+                invalidatesTags: ["offer"],
             }),
 
 

@@ -60,14 +60,14 @@ const AddItem = ({ searchTerm }) => {
         if (file) setImageFile(file);
     };
 
-    // **Delete**
+
     const handleDelete = async (productId) => {
         if (!confirm("Are you sure you want to delete this item?")) return;
 
         try {
             await deleteProduct(productId).unwrap();
             // alert("Deleted successfully");
-            toast.success("OTP sent successfully!");
+            toast.success("Deleted successfully!");
         } catch (error) {
             alert(error?.data?.message || "Failed to delete product");
         }
