@@ -96,6 +96,7 @@ const Register = () => {
         reset,
     } = useForm({
         resolver: yupResolver(schema),
+        mode: "onBlur",
     });
 
     useEffect(() => {
@@ -192,13 +193,23 @@ const Register = () => {
                         <input {...register("ownerName")} placeholder="Owner Name" className={inputClass("ownerName")} />
                         <input {...register("ownerEmail")} placeholder="Owner Email" className={inputClass("ownerEmail")} />
                         <input {...register("ownerAddress")} placeholder="Owner Address" className={inputClass("ownerAddress")} />
-                        <input {...register("ownerNumber")} placeholder="Owner Number" className={inputClass("ownerNumber")} />
+                        <div className="relative">
+                            <input {...register("ownerNumber")} maxLength={10} type="tel" placeholder="Owner Number" className={inputClass("ownerNumber")} />
+                            {errors.ownerNumber && (
+                                <p className="absolute -bottom-5 left-0 text-red-500 text-xs">{errors.ownerNumber.message}</p>
+                            )}
+                        </div>
 
                         {/* Hotel Info */}
                         <input {...register("hotelName")} placeholder="Hotel Name" className={inputClass("hotelName")} />
                         <input {...register("hotelEmail")} placeholder="Hotel Email" className={inputClass("hotelEmail")} />
                         <input {...register("hotelAddress")} placeholder="Hotel Address" className={inputClass("hotelAddress")} />
-                        <input {...register("hotelNumber")} placeholder="Hotel Phone Number" className={inputClass("hotelNumber")} />
+                        <div className="relative">
+                            <input {...register("hotelNumber")} maxLength={10} type="tel" placeholder="Hotel Phone Number" className={inputClass("hotelNumber")} />
+                            {errors.hotelNumber && (
+                                <p className="absolute -bottom-5 left-0 text-red-500 text-xs">{errors.hotelNumber.message}</p>
+                            )}
+                        </div>
 
                         {/* Hotel Image */}
                         <div className="col-span-1 md:col-span-2">
@@ -306,7 +317,7 @@ const Register = () => {
                                 type="button"
                                 onClick={handleGetLocation}
                                 disabled={loading}
-                                className={`mb-3 px-4 py-2 rounded-md text-white ${loading ? "bg-gray-400" : "bg-indigo-600 hover:bg-indigo-700"
+                                className={`mb-3 px-4 py-2 rounded-md text-white ${loading ? "bg-gray-400" : "bg-[#FF9F03]"
                                     }`}
                             >
                                 {loading ? "Detecting..." : "📍 Use My Location"}

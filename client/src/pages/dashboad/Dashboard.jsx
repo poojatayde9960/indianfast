@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Icon } from "@iconify/react";
 import { useNavigate, useOutletContext } from "react-router-dom";
-import vector from "/vector.png";
-import veg from "/veg.png";
 import NewOrderRequests from "./NewOrderRequests";
 import { useGetOrderByShopIdQuery } from "../../redux/apis/orderApi";
 import { useDispatch, useSelector } from "react-redux";
@@ -84,7 +82,6 @@ const Dashboard = () => {
                 console.error("Failed to fetch dashboard:", err);
             }
         };
-
         fetchDashboardStatus();
     }, [shopId, dispatch, attendanceGetDashbord]);
 
@@ -147,6 +144,7 @@ const Dashboard = () => {
     const readyOrders = orders.filter((o) => o.orderStatus === "ready" || o.orderStatus === "orderAccepted").length;
     const rejectedOrders = orders.filter((o) => o.orderStatus === "rejected").length;
     const pickupOrders = orders.filter((o) => o.orderStatus === "pickup").length;
+    const deliveredOrders = orders.filter((o) => o.orderStatus === "delivered").length;
 
     if (isLoading) {
         return (
@@ -180,7 +178,11 @@ const Dashboard = () => {
     }
 
 
-    return (
+    return <>
+
+
+        {/* <pre className="text-black mt-20">{JSON.stringify(data, null, 2)}</pre> */}
+
         <div className="p-4 sm:p-5 md:p-6 bg-[#F5F5F5] mt-20 min-h-[calc(100vh-80px)] md:h-[calc(100vh-80px)] overflow-y-auto transition-all duration-500">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-12 mb-8 w-full">
 
@@ -212,8 +214,9 @@ const Dashboard = () => {
                     </div>
                     <div>
                         <h2 className="text-3xl dm-sans mb-3 font-bold text-gray-900">
-                            {stats.todayOrders || 0}
+                            {deliveredOrders}
                         </h2>
+
 
                         <p className="text-sm text-[#808080] font-Poppins">Orders successfully delivered</p>
                     </div>
@@ -306,7 +309,7 @@ const Dashboard = () => {
 
             <NewOrderRequests />
         </div>
-    );
+    </>
 };
 
 export default Dashboard;

@@ -104,15 +104,19 @@ const AddBanner = () => {
                 {isError && <p>Failed to load banners</p>}
                 {!isLoading && !banners?.data?.length && <p>No banners found</p>}
 
-                {banners?.data?.map((banner) => (
-                    <div key={banner._id} className="flex flex-col items-center">
-                        <img
-                            src={banner.image}
-                            className="rounded-[10px] w-[380px] h-[180px] object-cover shadow-md"
-                        />
+                {banners?.data
+                    ?.filter((banner) => banner.status === "pending")
+                    ?.map((banner) => (
+                        <div key={banner._id} className="flex flex-col items-center">
+                            <img
+                                src={banner.image}
+                                className="rounded-[10px] w-[380px] h-[180px] object-cover shadow-md"
+                            />
 
-                    </div>
-                ))}
+                        </div>
+                    ))}
+
+
             </div>
 
 

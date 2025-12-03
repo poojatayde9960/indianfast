@@ -54,6 +54,7 @@ const FoodItem = () => {
             await categoriesAdd(formData).unwrap();
 
             reset();
+            setSelectedFoodCategory("");
             setShowModal(false);
             setShowCategories(true);
             setActiveCard("card1");

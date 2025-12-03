@@ -13,7 +13,7 @@ import { toast } from "react-toastify";
 
 const AddItem = ({ searchTerm }) => {
     const [editProduct] = useEditProductMutation();
-    const { data, isLoading } = useGetAllCategoriesQuery();
+    const { data: categoriesData, isLoading } = useGetAllCategoriesQuery();
     const [productToggle, { isLoading: toggleLoading }] = useProductToggleMutation();
     const [deleteProduct] = useDeleteProductMutation();
 
@@ -31,10 +31,10 @@ const AddItem = ({ searchTerm }) => {
 
     // **Auto select first category**
     useEffect(() => {
-        if (data?.length > 0 && !activeCategory) {
-            setActiveCategory(data[0].category_name);
+        if (categoriesData?.length > 0 && !activeCategory) {
+            setActiveCategory(categoriesData[0].category_name);
         }
-    }, [data, activeCategory]);
+    }, [categoriesData, activeCategory]);
 
 
     const openEditModal = (item) => {
@@ -76,12 +76,12 @@ const AddItem = ({ searchTerm }) => {
     // **Filtered products**
     const filteredProducts =
         (searchTerm
-            ? data?.flatMap(cat =>
+            ? categoriesData?.flatMap(cat =>
                 cat.products?.filter(p =>
                     p.name?.toLowerCase()?.includes(searchTerm.toLowerCase())
                 )
             )
-            : data?.find(cat => cat.category_name === activeCategory)?.products) || [];
+            : categoriesData?.find(cat => cat.category_name === activeCategory)?.products) || [];
 
     // ******************************************************
 
@@ -107,25 +107,50 @@ const AddItem = ({ searchTerm }) => {
     //         alert("Updated successfully");
     //         setEditModal(false);
     //     } catch (err) {
-    //         alert(err?.data?.message || "Update failed");
-    //     }
-    // };
     const onSubmitEdit = async (data) => {
         if (!selectedItem?._id) return;
+
+        // Find the correct category name
+        let categoryName = data.category_name;
+        if (!categoryName && categoriesData) {
+            const category = categoriesData.find(cat => cat.products.some(p => p._id === selectedItem._id));
+            if (category) {
+                categoryName = category.category_name;
+            }
+        }
+        // Fallback to selectedItem.foodCategory if available
+        if (!categoryName && selectedItem.foodCategory) {
+            categoryName = selectedItem.foodCategory;
+        }
 
         try {
             let dataToSend;
 
             if (imageFile) {
                 const formData = new FormData();
-                formData.append("name", data.name?.trim() || "");
-                formData.append("description", data.description?.trim() || "");
-                formData.append("price", data.price || 0);
-                formData.append("preparationTime", data.preparationTime || 0);
-                formData.append("gst", data.gst || 0);
-                formData.append("discountedPrice", data.discountedPrice || 0);
-                formData.append("category_name", data.category_name || selectedItem.category_name);
+                const appendIfDefined = (key, value) => {
+                    if (value !== undefined && value !== null && value !== "undefined") {
+                        formData.append(key, value);
+                    }
+                };
+
+                appendIfDefined("name", data.name?.trim());
+                appendIfDefined("description", data.description?.trim());
+                appendIfDefined("price", data.price);
+                appendIfDefined("preparationTime", data.preparationTime);
+                appendIfDefined("gst", data.gst);
+                appendIfDefined("discountedPrice", data.discountedPrice);
+
+                // Send the correctly resolved category_name
+                appendIfDefined("category_name", categoryName);
+
                 formData.append("image", imageFile);
+
+                // Log FormData entries
+                for (let [key, value] of formData.entries()) {
+                    console.log(`FormData: ${key} = ${value}`);
+                }
+
                 dataToSend = formData;
             } else {
                 dataToSend = {
@@ -135,8 +160,9 @@ const AddItem = ({ searchTerm }) => {
                     preparationTime: Number(data.preparationTime) || 0,
                     gst: Number(data.gst) || 0,
                     discountedPrice: Number(data.discountedPrice) || 0,
-                    category_name: data.category_name || selectedItem.category_name
+                    category_name: categoryName
                 };
+                console.log("Sending JSON Data:", dataToSend);
             }
 
             await editProduct({
@@ -150,7 +176,7 @@ const AddItem = ({ searchTerm }) => {
             setImageFile(null);
 
         } catch (err) {
-            console.error(err);
+            console.error("Edit Product Error:", err);
             toast.error(err?.data?.message || "Update failed");
         }
     };
@@ -234,7 +260,7 @@ const AddItem = ({ searchTerm }) => {
         {/* Category Buttons */}
         {!searchTerm && (
             <div className="flex flex-wrap gap-3 mb-5">
-                {data?.map(cat => (
+                {categoriesData?.map(cat => (
                     <button
                         key={cat._id}
                         onClick={() => setActiveCategory(cat.category_name)}

@@ -323,7 +323,7 @@ const Orders = () => {
                                 const address = order.addressId?.location || "—";
                                 const totalItems = order.services?.reduce((sum, cat) =>
                                     sum + (cat.products?.reduce((pSum, p) => pSum + p.quantity, 0) || 0), 0);
-                                const price = order.paymentSummary?.finalAmount || 0;
+                                const price = order.paymentSummary?.vendorAmount || 0;
                                 const created = new Date(order.createdAt).toLocaleString();
                                 const status = order.orderStatus || "Pending";
 
