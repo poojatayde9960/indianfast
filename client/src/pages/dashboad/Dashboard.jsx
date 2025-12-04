@@ -52,7 +52,6 @@ const Dashboard = () => {
         totalVendorAmount: 0,
         todayVendorAmount: 0,
     };
-    // Add refetch on mount & shopId change only
     useEffect(() => {
         if (!shopId) return;
 
@@ -80,7 +79,7 @@ const Dashboard = () => {
         };
 
         fetchStatus();
-    }, [shopId, dispatch, attendanceGetDashbord]); // Remove extra dependencies
+    }, [shopId, dispatch, attendanceGetDashbord]); //
 
 
     const { setPageTitle } = useOutletContext();
@@ -90,30 +89,25 @@ const Dashboard = () => {
         const wasActive = isActive;
         const optimisticStatus = !wasActive;
 
-        // 1. Optimistic UI Update (fast feel)
         dispatch(setActive(optimisticStatus));
         if (optimisticStatus && !checkInTime) {
             dispatch(setCheckInTime(new Date().toISOString()));
         }
 
         try {
-            // 2. Toggle API call
             await toggleAvailability({ ShopId: shopId }).unwrap();
 
-            // 3. IMPORTANT: REFETCH LATEST DASHBOARD STATUS (This is the real fix)
             const dashboardRes = await attendanceGetDashbord({ ShopId: shopId }).unwrap();
             const data = dashboardRes.result || dashboardRes;
 
             const isNowOnline = data.availabilityStatus === "Open" || data.availabilityStatus === "Online";
 
-            // 4. Update Redux with ACTUAL server state
             dispatch(setActive(isNowOnline));
 
             if (isNowOnline && data.currentSessionInfo?.checkInTime) {
                 const parsedTime = parseIndianDateTime(data.currentSessionInfo.checkInTime);
                 dispatch(setCheckInTime(parsedTime?.toISOString() || null));
 
-                // Update timer with correct elapsed time
                 if (data.currentSessionInfo?.durationFormatted) {
                     const seconds = parseDurationFormatted(data.currentSessionInfo.durationFormatted);
                     setElapsedSeconds(seconds);
@@ -126,7 +120,6 @@ const Dashboard = () => {
 
         } catch (error) {
             console.error("Toggle failed:", error);
-            // Revert to previous state on error
             dispatch(setActive(wasActive));
             if (!wasActive) dispatch(setCheckInTime(null));
 

@@ -71,11 +71,9 @@ const AttendanceTimer = () => {
                             flex flex-col lg:flex-row gap-6 
                             overflow-y-auto transition-all duration-500">
 
-                {/* LEFT TABLE - Mobile var full width, baki same */}
                 <div className="bg-[#D9D9D92B] shadow text-black rounded-2xl p-4 sm:p-6 
                                 w-full lg:w-[60%] h-fit lg:h-[600px] flex flex-col">
 
-                    {/* Header */}
                     <div className="bg-[#0073FF0F] rounded-full w-full mb-4 px-4 sm:px-8 py-3">
                         <div className="grid grid-cols-3 dm-sans font-medium text-gray-700 text-sm sm:text-base">
                             <span className="text-left">Check In</span>
@@ -84,7 +82,6 @@ const AttendanceTimer = () => {
                         </div>
                     </div>
 
-                    {/* Scrollable Sessions */}
                     <div className="flex-1 overflow-y-auto scrollbar-hide -mr-4 pr-4 pb-4">
                         {error ? (
                             <div className="text-center text-red-600 py-10">
@@ -128,12 +125,10 @@ const AttendanceTimer = () => {
                     )}
                 </div>
 
-                {/* RIGHT SIDE - Calendar + Timer */}
                 <div className="flex flex-col gap-6 w-full lg:w-[40%]">
 
                     {/* Calendar */}
                     <div className="bg-white rounded-2xl h-[96%] p-4 sm:p-6 shadow-lg flex flex-col">
-                        {/* Header with Navigation */}
                         <div className="flex items-center justify-between mb-4">
                             <button
                                 onClick={() => setSelectedDate(new Date(selectedDate.getFullYear(), selectedDate.getMonth() - 1))}
@@ -158,21 +153,17 @@ const AttendanceTimer = () => {
                             </button>
                         </div>
 
-                        {/* Rest of calendar */}
                         <div className="grid grid-cols-7 gap-1 text-center text-gray-700">
-                            {/* Week days */}
                             {["M", "T", "W", "T", "F", "S", "S"].map((day) => (
                                 <div key={day} className="text-gray-400 font-medium text-xs sm:text-sm py-2">
                                     {day}
                                 </div>
                             ))}
 
-                            {/* Empty cells before first day */}
                             {Array.from({ length: startDayOfWeek === 0 ? 6 : startDayOfWeek - 1 }).map((_, i) => (
                                 <div key={`empty-${i}`} />
                             ))}
 
-                            {/* Dates */}
                             {monthDays.map((day) => {
                                 const isToday = isSameDay(day, today);
                                 const isSelected = isSameDay(day, selectedDate);
