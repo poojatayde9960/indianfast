@@ -27,6 +27,18 @@ export const categoriesApi = createApi({
                     body: formData,
                 }),
                 invalidatesTags: ["categories"],
+                async onQueryStarted(formData, { dispatch, queryFulfilled }) {
+                    try {
+                        const { data: newCategory } = await queryFulfilled;
+                        dispatch(
+                            categoriesApi.util.updateQueryData('getAllCategories', undefined, (draft) => {
+                                if (newCategory) {
+                                    draft.push(newCategory);
+                                }
+                            })
+                        );
+                    } catch { }
+                }
             }),
             addProduct: builder.mutation({
                 query: (formData) => ({
@@ -35,6 +47,27 @@ export const categoriesApi = createApi({
                     body: formData,
                 }),
                 invalidatesTags: ["categories"],
+                async onQueryStarted(formData, { dispatch, queryFulfilled }) {
+                    try {
+                        const { data: newProduct } = await queryFulfilled;
+                        // Assuming the backend returns the created product or the updated category
+                        // If it returns the product, we need to know which category it belongs to.
+                        // The formData contains 'category_name'.
+                        // Note: formData is a FormData object, so we need to get the value.
+                        const categoryName = formData.get('category_name');
+
+                        if (newProduct && categoryName) {
+                            dispatch(
+                                categoriesApi.util.updateQueryData('getAllCategories', undefined, (draft) => {
+                                    const category = draft.find(c => c.category_name === categoryName);
+                                    if (category) {
+                                        category.products.push(newProduct);
+                                    }
+                                })
+                            );
+                        }
+                    } catch { }
+                }
             }),
             deleteProduct: builder.mutation({
                 query: (id) => ({
@@ -42,6 +75,20 @@ export const categoriesApi = createApi({
                     method: "DELETE",
                 }),
                 invalidatesTags: ["categories"],
+                async onQueryStarted(id, { dispatch, queryFulfilled }) {
+                    const patchResult = dispatch(
+                        categoriesApi.util.updateQueryData('getAllCategories', undefined, (draft) => {
+                            draft.forEach(cat => {
+                                cat.products = cat.products.filter(p => p._id !== id);
+                            });
+                        })
+                    );
+                    try {
+                        await queryFulfilled;
+                    } catch {
+                        patchResult.undo();
+                    }
+                }
             }),
             editProduct: builder.mutation({
                 query: ({ id, formData }) => ({
@@ -68,6 +115,18 @@ export const categoriesApi = createApi({
                     method: "DELETE",
                 }),
                 invalidatesTags: ["categories"],
+                async onQueryStarted(id, { dispatch, queryFulfilled }) {
+                    const patchResult = dispatch(
+                        categoriesApi.util.updateQueryData('getAllCategories', undefined, (draft) => {
+                            return draft.filter(c => c._id !== id);
+                        })
+                    );
+                    try {
+                        await queryFulfilled;
+                    } catch {
+                        patchResult.undo();
+                    }
+                }
             }),
 
             productToggle: builder.mutation({
@@ -82,7 +141,8 @@ export const categoriesApi = createApi({
                             draft.forEach(cat => {
                                 const product = cat.products.find(p => p._id === productId);
                                 if (product) {
-                                    product.available = !product.available;
+                                    const isAvailable = product.available === true || product.available === "Available";
+                                    product.available = !isAvailable;
                                 }
                             });
                         })

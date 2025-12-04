@@ -7,7 +7,7 @@ import { Icon } from "@iconify/react";
 import { useForm } from "react-hook-form";
 const AddCategories = ({ searchTerm }) => {
     const [editCategories] = useEditCategoriesMutation()
-    const { data, isLoading } = useGetAllCategoriesQuery();
+    const { data, isLoading } = useGetAllCategoriesQuery(undefined, { refetchOnMountOrArgChange: true });
     const [deleteCategory] = useDeleteCategoryMutation()
     const [showModal, setShowModal] = useState(false);
     const [selectedCategory, setSelectedCategory] = useState(null);

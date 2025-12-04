@@ -12,7 +12,7 @@ import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 
 const NewOrderRequests = () => {
-    const shopId = useSelector((state) => state.auth.shopId);
+    const { shopId, isActive } = useSelector((state) => state.auth);
     const { data, isLoading } = useGetOrderByShopIdQuery(
         shopId,
         { skip: !shopId, refetchOnMountOrArgChange: true }
@@ -67,7 +67,7 @@ const NewOrderRequests = () => {
 
     return <>
 
-        {/* <pre className='text-black'>{JSON.stringify(data, null, 2)}</pre> */}
+        {/* <pre className='text-black'>{JSON.stringyify(data, null, 2)}</pre> */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
             {/* LEFT SIDE – New Requests */}
@@ -76,7 +76,12 @@ const NewOrderRequests = () => {
                     New Order Requests
                 </h3>
 
-                {pendingOrders.length > 0 ? (
+                {!isActive ? (
+                    <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
+                        <h4 className="text-red-700 font-semibold text-lg mb-2">You are currently Offline</h4>
+                        <p className="text-red-600">Please go online to receive and accept new orders.</p>
+                    </div>
+                ) : pendingOrders.length > 0 ? (
                     pendingOrders.slice(0, 2).map((order, index) => (
                         <div
                             key={order._id || index}
@@ -185,7 +190,7 @@ const NewOrderRequests = () => {
                 )}
             </div>
 
-            {/* RIGHT SIDE – Recent Transactions */}
+
             {/* <pre className='text-black'>{JSON.stringify(data, null, 2)}</pre> */}
             <div className="bg-white rounded-[20px] mt-4 lg:-mt-[40%] w-full lg:w-[85%] lg:ml-11 shadow-[0_4px_20px_rgba(0,0,0,0.08)] 
                 p-4 sm:p-5">
@@ -201,17 +206,20 @@ const NewOrderRequests = () => {
                 </div>
 
                 <div className="flex flex-col gap-3 px-1 text-sm">
-                    {data?.orders?.slice(0, 8).map((order, i) => (
-                        <div key={i} className="flex justify-between items-center py-[6px] border-b border-[#D9D9D94F]">
-                            <p className="text-[#000000] font-Poppins text-[110%]">
-                                {order?.addressId?.name || "Unknown"}
-                            </p>
+                    {data?.orders
+                        ?.filter(order => order.orderStatus === "delivered")
+                        ?.slice(0, 8)
+                        ?.map((order, i) => (
+                            <div key={i} className="flex justify-between items-center py-[6px] border-b border-[#D9D9D94F]">
+                                <p className="text-[#000000] font-Poppins text-[110%]">
+                                    {order?.addressId?.name || "Unknown"}
+                                </p>
 
-                            <p className="text-[#19700B] text-[110%] font-medium">
-                                +{order?.paymentSummary?.finalAmount || 0}
-                            </p>
-                        </div>
-                    ))}
+                                <p className="text-[#19700B] text-[110%] font-medium">
+                                    +{order?.paymentSummary?.finalAmount || 0}
+                                </p>
+                            </div>
+                        ))}
                 </div>
 
                 <p

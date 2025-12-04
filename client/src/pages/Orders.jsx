@@ -13,7 +13,7 @@ const Orders = () => {
 
     const navigate = useNavigate();
     const location = useLocation();
-    const shopId = useSelector((state) => state.auth.shopId);
+    const { shopId, isActive } = useSelector((state) => state.auth);
 
     const { data, isLoading, isError } = useGetOrderByShopIdQuery(shopId, { skip: !shopId });
     const [orderAccepted] = useOrderAcceptedMutation();
@@ -48,6 +48,10 @@ const Orders = () => {
 
     // Accept order → Ready
     const handleAcceptOrder = async (orderId) => {
+        if (!isActive) {
+            alert("You are currently offline. Please go online to accept orders.");
+            return;
+        }
         try {
 
             await orderAccepted({ id: orderId, orderStatus: "orderAccepted" }).unwrap();
@@ -66,6 +70,10 @@ const Orders = () => {
 
     // Reject order
     const handleRejectOrder = async (orderId) => {
+        if (!isActive) {
+            alert("You are currently offline. Please go online to reject orders.");
+            return;
+        }
         const confirmReject = window.confirm("Are you sure you want to reject this order?");
         if (!confirmReject) return;
 
@@ -82,6 +90,10 @@ const Orders = () => {
         }
     };
     const handleMarkAsReady = async (orderId) => {
+        if (!isActive) {
+            alert("You are currently offline. Please go online to update order status.");
+            return;
+        }
         try {
             await confirmRejectOrder({
                 id: orderId,
@@ -103,6 +115,10 @@ const Orders = () => {
 
 
     const handleDeliveryPickedUp = async (orderId) => {
+        if (!isActive) {
+            alert("You are currently offline. Please go online to update order status.");
+            return;
+        }
         try {
             await confirmRejectOrder({
                 id: orderId,
@@ -362,14 +378,15 @@ const Orders = () => {
                                                     Mark As Ready
                                                 </button>
                                             )
-                                                : activeTab.startsWith("Ready") ? (
-                                                    <button
-                                                        onClick={() => handleDeliveryPickedUp(order._id)}
-                                                        className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition"
-                                                    >
-                                                        Delivery Picked Up
-                                                    </button>
-                                                ) : (
+                                                // : activeTab.startsWith("Ready") ? (
+                                                //     <button
+                                                //         onClick={() => handleDeliveryPickedUp(order._id)}
+                                                //         className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition"
+                                                //     >
+                                                //         Delivery Picked Up
+                                                //     </button>
+                                                // ) 
+                                                : (
                                                     <span
                                                         className={`px-4 py-1 rounded-md text-sm font-semibold ${status === "orderReady"
                                                             ? "text-[#19700B]"

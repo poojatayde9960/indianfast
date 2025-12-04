@@ -59,7 +59,7 @@ const Review = () => {
                     reviews.map((item, index) => (
                         <div
                             key={index}
-                            className="bg-white border border-[#00BCD4] rounded-xl p-5 mt-4 w-[60%]"
+                            className="bg-white border border-[#FF9129] rounded-xl p-5 mt-4 w-[60%]"
                         >
                             {/* USER ROW */}
                             <div className="flex items-center gap-4">

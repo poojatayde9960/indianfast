@@ -12,7 +12,7 @@ import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
 
 const FoodItem = () => {
-    const { data } = useGetAllCategoriesQuery();
+    const { data } = useGetAllCategoriesQuery(undefined, { refetchOnMountOrArgChange: true });
     const [AddProduct] = useAddProductMutation()
     // const [categoriesAdd] = useCategoriesAddMutation();
     const [categoriesAdd, { isLoading, isSuccess, isError }] = useCategoriesAddMutation();

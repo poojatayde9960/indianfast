@@ -13,7 +13,7 @@ import { toast } from "react-toastify";
 
 const AddItem = ({ searchTerm }) => {
     const [editProduct] = useEditProductMutation();
-    const { data: categoriesData, isLoading } = useGetAllCategoriesQuery();
+    const { data: categoriesData, isLoading } = useGetAllCategoriesQuery(undefined, { refetchOnMountOrArgChange: true });
     const [productToggle, { isLoading: toggleLoading }] = useProductToggleMutation();
     const [deleteProduct] = useDeleteProductMutation();
 
@@ -67,7 +67,7 @@ const AddItem = ({ searchTerm }) => {
         try {
             await deleteProduct(productId).unwrap();
             // alert("Deleted successfully");
-            toast.success("Deleted successfully!");
+            toast.error("Deleted successfully!");
         } catch (error) {
             alert(error?.data?.message || "Failed to delete product");
         }
@@ -83,30 +83,6 @@ const AddItem = ({ searchTerm }) => {
             )
             : categoriesData?.find(cat => cat.category_name === activeCategory)?.products) || [];
 
-    // ******************************************************
-
-    // const onSubmitEdit = async (values) => {
-    //     try {
-    //         const formData = new FormData();
-
-    //         Object.keys(values).forEach(key => {
-    //             formData.append(key, values[key]);
-    //         });
-
-    //         if (imageFile) {
-    //             formData.append("image", imageFile);
-    //         }
-
-    //         const { name, description, price, preparationTime } = formData;
-
-    //         const dataToSend = {
-    //             name, description, price, preparationTime
-    //         }
-    //         await editProduct({ id: selectedItem._id, formData: dataToSend }).unwrap();
-
-    //         alert("Updated successfully");
-    //         setEditModal(false);
-    //     } catch (err) {
     const onSubmitEdit = async (data) => {
         if (!selectedItem?._id) return;
 

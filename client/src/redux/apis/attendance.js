@@ -58,4 +58,4 @@ export const attendanceApi = createApi({
     }
 })
 
-export const { useToggleAvailabilityMutation, useGetToggleAvailabilityMutation, useAttendanceGetDashbordMutation } = attendanceApi
+export const { useToggleAvailabilityMutation, useGetToggleAvailabilityMutation, useAttendanceGetDashbordMutation, useGetDashboardQuery } = attendanceApi

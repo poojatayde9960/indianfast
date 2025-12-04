@@ -14,13 +14,14 @@ const AddBanner = () => {
     const shopId = useSelector((state) => state.auth.shopId);
 
     const { data: banners, isLoading, isError } = useGetBannerQuery(shopId);
-
+    const [previewUrl, setPreviewUrl] = useState(null);
     const navigate = useNavigate();
     const [showPopup, setShowPopup] = useState(false);
     const handleOverlayClick = (e) => {
 
         if (e.target === e.currentTarget) {
             setShowPopup(false);
+            setPreviewUrl(null);
         }
     };
     const { register, handleSubmit, reset } = useForm();
@@ -35,6 +36,7 @@ const AddBanner = () => {
         if (res?.data) {
             toast.success("Banner Added Successfully!");
             reset();
+            setPreviewUrl(null);
             setShowPopup(false);
         } else {
             alert("Failed to upload banner");
@@ -65,7 +67,10 @@ const AddBanner = () => {
             </div>
 
 
-            <div className="flex flex-wrap justify-center sm:justify-start gap-4 sm:gap-8 bg-[#FFFFFF] p-4 sm:p-11 min-h-[80vh] lg:min-h-0 lg:h-[560px] overflow-y-auto">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-8 bg-[#FFFFFF] p-4 sm:p-11 min-h-[80vh] lg:min-h-0 lg:h-[560px] overflow-y-auto">
+
+
+                {/* <div className="flex flex-wrap justify-center sm:justify-start gap-4 sm:gap-8 bg-[#FFFFFF] p-4 sm:p-11 min-h-[80vh] lg:min-h-0 lg:h-[560px] overflow-y-auto"> */}
                 {isLoading && (
                     <div className="w-full flex flex-wrap gap-8">
                         {[1, 2, 3].map((i) => (
@@ -123,46 +128,62 @@ const AddBanner = () => {
 
 
             {showPopup && (
-                <div
-                    onClick={handleOverlayClick}
-                    className="fixed inset-0 bg-[#00000066] flex justify-center items-center z-50 px-4"
-                >
+                <div onClick={handleOverlayClick} className="fixed inset-0 bg-[#00000066] flex justify-center items-center z-50 px-4">
                     <div className="bg-white rounded-[25px] p-6 sm:p-8 w-full max-w-[460px] shadow-lg relative">
-
                         <h2 className="text-black text-[150%] mb-4">Upload Banner</h2>
 
-                        {/* FORM START */}
                         <form onSubmit={handleSubmit(onSubmit)}>
+                            {/* Preview + Upload */}
+                            <label className="block relative cursor-pointer">
+                                <div className="bg-[#D9D9D963] w-full h-[157px] rounded-md flex flex-col justify-center items-center overflow-hidden">
+                                    {previewUrl ? (
+                                        <img src={previewUrl} alt="Preview" className="w-full h-full object-cover" />
+                                    ) : (
+                                        <>
+                                            <Icon icon="material-symbols:upload" className="text-[#000000B5] text-[28px] mb-2" />
+                                            <span className="text-[#000000B5] text-[120%]">Upload Banner</span>
+                                        </>
+                                    )}
+                                </div>
 
-                            {/* Upload Box */}
-                            <label className="flex flex-col justify-center items-center bg-[#D9D9D963] w-full h-[157px] cursor-pointer mx-auto rounded-md">
-                                <Icon icon="material-symbols:upload" className="text-[#000000B5] text-[28px] mb-2" />
-                                <span className="text-[#000000B5] text-[120%]">Upload Banner</span>
-                                <input type="file" className="hidden" {...register("image")} required />
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    className="absolute inset-0 opacity-0 cursor-pointer"
+                                    {...register("image", {
+                                        required: true,
+                                        onChange: (e) => {
+                                            const file = e.target.files[0];
+                                            if (file) {
+                                                const reader = new FileReader();
+                                                reader.onload = () => setPreviewUrl(reader.result);
+                                                reader.readAsDataURL(file);
+                                            } else {
+                                                setPreviewUrl(null);
+                                            }
+                                        }
+                                    })}
+                                />
                             </label>
 
-                            {/* Payment Input */}
+                            {/* Payment */}
                             <input
                                 type="text"
                                 placeholder="Payment"
-                                {...register("payment")}
+                                {...register("payment", { required: true })}
                                 className="w-full border text-black mt-3 border-[#D9D9D9] px-4 py-2.5 rounded-sm"
-                                required
                             />
 
-                            {/* Add Banner Button */}
+                            {/* Submit Button */}
                             <div className="flex justify-center mt-6">
                                 <button
                                     type="submit"
-                                    className="bg-[#3F9224] hover:bg-[#347b1f] text-white text-[120%] px-10 py-4 rounded-lg"
+                                    className="bg-[#3F9224] hover:bg-[#347b1f] text-white text-[120%] px-10 py-4 rounded-lg transition"
                                 >
                                     +Add Banner
                                 </button>
                             </div>
-
                         </form>
-
-
                     </div>
                 </div>
             )}

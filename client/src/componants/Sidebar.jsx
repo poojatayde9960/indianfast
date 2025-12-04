@@ -63,6 +63,9 @@ const Sidebar = ({ setPageTitle }) => {
         } else if (path.includes("/review")) {
             setActive("Review");
             setPageTitle("Review");
+        } else if (path.includes("/paymentRequest")) {
+            setActive("paymentRequest");
+            setPageTitle("Payment Request");
         }
     }, [location.pathname, setPageTitle]);
     return (

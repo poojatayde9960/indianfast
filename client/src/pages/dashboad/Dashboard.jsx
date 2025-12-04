@@ -52,65 +52,83 @@ const Dashboard = () => {
         totalVendorAmount: 0,
         todayVendorAmount: 0,
     };
+    // Add refetch on mount & shopId change only
     useEffect(() => {
         if (!shopId) return;
 
-        const fetchDashboardStatus = async () => {
+        const fetchStatus = async () => {
             try {
                 const res = await attendanceGetDashbord({ ShopId: shopId }).unwrap();
                 const data = res.result || res;
 
-                const hasOngoing = data.currentSessionInfo?.hasOngoingSession || false;
-                const isOpen = data.availabilityStatus === "Open";
-                const isOnline = isOpen && hasOngoing;
-
+                const isOnline = data.availabilityStatus === "Open" || data.availabilityStatus === "Online";
                 dispatch(setActive(isOnline));
 
-                let initialSeconds = 0;
-                if (isOnline && data.currentSessionInfo?.durationFormatted) {
-                    initialSeconds = parseDurationFormatted(data.currentSessionInfo.durationFormatted);
-                }
-
-                setElapsedSeconds(initialSeconds);
-
-                if (data.currentSessionInfo?.checkInTime) {
+                if (isOnline && data.currentSessionInfo?.checkInTime) {
                     const parsed = parseIndianDateTime(data.currentSessionInfo.checkInTime);
                     dispatch(setCheckInTime(parsed?.toISOString() || null));
+                } else {
+                    dispatch(setCheckInTime(null));
                 }
 
+                if (isOnline && data.currentSessionInfo?.durationFormatted) {
+                    setElapsedSeconds(parseDurationFormatted(data.currentSessionInfo.durationFormatted));
+                }
             } catch (err) {
-                console.error("Failed to fetch dashboard:", err);
+                console.error("Initial dashboard fetch failed", err);
             }
         };
-        fetchDashboardStatus();
-    }, [shopId, dispatch, attendanceGetDashbord]);
 
+        fetchStatus();
+    }, [shopId, dispatch, attendanceGetDashbord]); // Remove extra dependencies
 
 
     const { setPageTitle } = useOutletContext();
     const handleToggleAvailability = async () => {
         if (!shopId || isToggling) return;
 
-        const newStatus = !isActive;
-        dispatch(setActive(newStatus));
-        if (!isActive && !checkInTime) {
+        const wasActive = isActive;
+        const optimisticStatus = !wasActive;
+
+        // 1. Optimistic UI Update (fast feel)
+        dispatch(setActive(optimisticStatus));
+        if (optimisticStatus && !checkInTime) {
             dispatch(setCheckInTime(new Date().toISOString()));
         }
 
         try {
-            const response = await toggleAvailability({ ShopId: shopId }).unwrap();
-            const data = response.result || response;
+            // 2. Toggle API call
+            await toggleAvailability({ ShopId: shopId }).unwrap();
 
-            const actualStatus = data.availabilityStatus === "Open" || data.currentSessionInfo?.hasOngoingSession;
-            const actualCheckIn = data.currentSessionInfo?.checkInTime;
+            // 3. IMPORTANT: REFETCH LATEST DASHBOARD STATUS (This is the real fix)
+            const dashboardRes = await attendanceGetDashbord({ ShopId: shopId }).unwrap();
+            const data = dashboardRes.result || dashboardRes;
 
-            dispatch(setActive(actualStatus));
-            dispatch(setCheckInTime(actualCheckIn || null));
+            const isNowOnline = data.availabilityStatus === "Open" || data.availabilityStatus === "Online";
+
+            // 4. Update Redux with ACTUAL server state
+            dispatch(setActive(isNowOnline));
+
+            if (isNowOnline && data.currentSessionInfo?.checkInTime) {
+                const parsedTime = parseIndianDateTime(data.currentSessionInfo.checkInTime);
+                dispatch(setCheckInTime(parsedTime?.toISOString() || null));
+
+                // Update timer with correct elapsed time
+                if (data.currentSessionInfo?.durationFormatted) {
+                    const seconds = parseDurationFormatted(data.currentSessionInfo.durationFormatted);
+                    setElapsedSeconds(seconds);
+                }
+            } else {
+                dispatch(setCheckInTime(null));
+                setElapsedSeconds(0);
+                setDuration("00 : 00 : 00");
+            }
 
         } catch (error) {
-            console.error("Failed to toggle availability:", error);
-            dispatch(setActive(!newStatus)); // revert
-            if (!isActive) dispatch(setCheckInTime(null));
+            console.error("Toggle failed:", error);
+            // Revert to previous state on error
+            dispatch(setActive(wasActive));
+            if (!wasActive) dispatch(setCheckInTime(null));
 
             alert("Failed to update availability. Please try again.");
         }
