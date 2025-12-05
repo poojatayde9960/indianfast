@@ -29,7 +29,6 @@ const AddItem = ({ searchTerm }) => {
         formState: { errors },
     } = useForm();
 
-    // **Auto select first category**
     useEffect(() => {
         if (categoriesData?.length > 0 && !activeCategory) {
             setActiveCategory(categoriesData[0].category_name);
@@ -73,7 +72,6 @@ const AddItem = ({ searchTerm }) => {
         }
     };
 
-    // **Filtered products**
     const filteredProducts =
         (searchTerm
             ? categoriesData?.flatMap(cat =>
@@ -86,7 +84,6 @@ const AddItem = ({ searchTerm }) => {
     const onSubmitEdit = async (data) => {
         if (!selectedItem?._id) return;
 
-        // Find the correct category name
         let categoryName = data.category_name;
         if (!categoryName && categoriesData) {
             const category = categoriesData.find(cat => cat.products.some(p => p._id === selectedItem._id));
@@ -94,7 +91,6 @@ const AddItem = ({ searchTerm }) => {
                 categoryName = category.category_name;
             }
         }
-        // Fallback to selectedItem.foodCategory if available
         if (!categoryName && selectedItem.foodCategory) {
             categoryName = selectedItem.foodCategory;
         }
@@ -117,12 +113,10 @@ const AddItem = ({ searchTerm }) => {
                 appendIfDefined("gst", data.gst);
                 appendIfDefined("discountedPrice", data.discountedPrice);
 
-                // Send the correctly resolved category_name
                 appendIfDefined("category_name", categoryName);
 
                 formData.append("image", imageFile);
 
-                // Log FormData entries
                 for (let [key, value] of formData.entries()) {
                     console.log(`FormData: ${key} = ${value}`);
                 }
@@ -254,7 +248,6 @@ const AddItem = ({ searchTerm }) => {
         {/* Table */}
         <div className="bg-white rounded-[15px] border shadow p-5">
 
-            {/* Desktop Table */}
             <div className="overflow-x-auto hidden md:block">
                 <table className="w-full min-w-[700px] text-[14px]">
                     <thead className="bg-[#F5F5F5] text-[#000000] h-14">

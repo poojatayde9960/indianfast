@@ -41,28 +41,37 @@ const Transactions = () => {
 
         setRevenueData(res.data);
     };
-    const filteredTransactions = revenueData?.orders?.map(order => ({
-        customerName:
-            order?.addressId?.name ||
-            order?.userId?.name ||
-            order?.userId?.contactNo ||
-            "N/A",
+    const filteredTransactions =
+        revenueData?.orders?.map((order) => ({
+            customerName:
+                order?.addressId?.name ||
+                order?.userId?.name ||
+                order?.userId?.contactNo ||
+                "N/A",
 
-        category: order?.services?.[0]?.category_name || "N/A",
-        items: order?.services?.[0]?.products?.length || 0,
-        type: order.shopId?.hotelType,
-        date: order.createdAt.slice(0, 10).split("-").reverse().join("/"),
-        amount: order.paymentSummary.finalAmount,
-        method: "Online",
-        status: order.orderStatus,
-        originalOrder: order
-    })) || [];
+            category: order?.services?.[0]?.category_name || "N/A",
+            items: order?.services?.[0]?.products?.length || 0,
+            type: order.shopId?.hotelType,
+            date: order.createdAt.slice(0, 10).split("-").reverse().join("/"),
+            amount: order.paymentSummary?.finalAmount || 0,
+            method: "Online",
+            status: order.orderStatus,
+
+            // 👉👉 FIX ADDED: vendorAmount
+            vendorAmount:
+                order.paymentSummary?.vendorAmount ??
+                order.vendorAmount ??
+                0,
+
+            originalOrder: order,
+        })) || [];
+
 
 
     const lossTransactions = filteredTransactions.filter(
         (tx) => tx.status?.toLowerCase() === "rejected"
     );
-    const lossTotal = lossTransactions.reduce((sum, tx) => sum + tx.amount, 0);
+    const lossTotal = lossTransactions.reduce((sum, tx) => sum + tx.vendorAmount, 0);
 
     const getAmountColor = () => {
         if (activeTab === "Profit") return "#18780A";
@@ -72,14 +81,14 @@ const Transactions = () => {
 
     const profitTransactions = filteredTransactions.filter(
         (tx) =>
-            tx.amount > 0 &&
+            tx.vendorAmount > 0 &&
             (tx.status?.toLowerCase() === "delivered"
                 // tx.status?.toLowerCase() === "completed" ||
                 // tx.status?.toLowerCase() === "orderaccepted"
             )
     );
 
-    const profitTotal = profitTransactions.reduce((sum, tx) => sum + tx.amount, 0);
+    const profitTotal = profitTransactions.reduce((sum, tx) => sum + tx.vendorAmount, 0);
     const profitCount = profitTransactions.length;
     const lossCount = lossTransactions.length;
 
@@ -406,18 +415,18 @@ const Transactions = () => {
                                                     ? "#E60023"
                                                     : tx.status?.toLowerCase() === "rejected" || tx.status?.toLowerCase() === "cancelled"
                                                         ? "#E60023"
-                                                        : tx.amount > 0
+                                                        : tx.vendorAmount > 0
                                                             ? "#18780A"
                                                             : "#E60023",
                                         }}
                                     >
                                         {activeTab === "Loss"
-                                            ? `-${Math.abs(tx.amount)}`
+                                            ? `-${Math.abs(tx.vendorAmount)}`
                                             : tx.status?.toLowerCase() === "rejected" || tx.status?.toLowerCase() === "cancelled"
-                                                ? `-${Math.abs(tx.amount)}`
-                                                : tx.amount > 0
-                                                    ? `+${tx.amount}`
-                                                    : `-${Math.abs(tx.amount)}`}
+                                                ? `-${Math.abs(tx.vendorAmount)}`
+                                                : tx.vendorAmount > 0
+                                                    ? `+${tx.vendorAmount}`
+                                                    : `-${Math.abs(tx.vendorAmount)}`}
                                     </td>
 
                                     <td className="py-3 px-6">{tx.method}</td>

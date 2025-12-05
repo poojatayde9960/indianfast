@@ -13,26 +13,40 @@ const AttendanceTimer = () => {
     const formatDateForAPI = (date) => format(date, "dd-MM-yyyy");
 
     useEffect(() => {
-        if (shopId && selectedDate) {
-            const formattedDate = formatDateForAPI(selectedDate);
-            getToggleAvailability({
-                ShopId: shopId,
-                date: formattedDate,
+        if (!shopId || !selectedDate) return;
+
+        const formattedDate = format(selectedDate, "dd-MM-yyyy");
+
+        getToggleAvailability({
+            ShopId: shopId,
+            date: formattedDate
+        })
+            .unwrap()
+            .then((res) => {
+                console.log("API Response:", res);
+
+                if (res.success && res.deliverydetails) {
+                    const data = res.deliverydetails;
+
+                    setAttendanceData({
+                        sessions: data.sessions || [],
+                        totalWorkingHours: data.totalWorkingHours || 0
+                    });
+                } else {
+                    setAttendanceData({ sessions: [], totalWorkingHours: 0 });
+                }
             })
-                .unwrap()
-                .then((res) => {
-                    console.log("Data for", formattedDate, ":", res);
-                    setAttendanceData(res.deliverydetails);
-                })
-                .catch((err) => console.error("Error:", err));
-        }
+            .catch((err) => {
+                console.error("Error:", err);
+                setAttendanceData({ sessions: [], totalWorkingHours: 0 });
+            });
     }, [selectedDate, shopId, getToggleAvailability]);
 
     const today = new Date();
     const monthStart = startOfMonth(selectedDate);
     const monthEnd = endOfMonth(selectedDate);
     const monthDays = eachDayOfInterval({ start: monthStart, end: monthEnd });
-    const startDayOfWeek = monthStart.getDay(); // 0 = Sunday
+    const startDayOfWeek = monthStart.getDay();
 
     const formatTime = (isoString) => {
         if (!isoString) return "-";
@@ -47,23 +61,22 @@ const AttendanceTimer = () => {
     };
 
     const sessions = attendanceData?.sessions || [];
-    const totalHours = attendanceData?.totalWorkingHours || 0;
+    const totalHours = attendanceData?.totalWorkingHours || "0.00.00"; // string 
 
     if (isLoading) return <p className="text-black mt-36 text-center">Loading...</p>;
-    const formatTotalHoursToTimer = (decimalHours) => {
-        if (!decimalHours) return "00 : 00 : 00";
 
-        const totalMinutes = Math.round(decimalHours * 100);
+    const formatTotalHoursToTimer = (totalHours) => {
+        if (!totalHours || totalHours <= 0) return "00 : 00 : 00";
 
-        const hrs = String(Math.floor(totalMinutes / 60)).padStart(2, "0");
-        const mins = String(totalMinutes % 60).padStart(2, "0");
-        const secs = "00";
+        const hrs = Math.floor(totalHours);
+        const minsDecimal = (totalHours - hrs) * 60;
+        const mins = Math.floor(minsDecimal);
+        const secs = Math.round((minsDecimal - mins) * 60);
 
-        return `${hrs} : ${mins} : ${secs}`;
+        return `${hrs.toString().padStart(2, "0")} : ${mins
+            .toString()
+            .padStart(2, "0")} : ${secs.toString().padStart(2, "0")}`;
     };
-
-
-
 
     return (
         <>
@@ -103,9 +116,8 @@ const AttendanceTimer = () => {
                                             {formatTime(session.checkInTime)}
                                         </span>
                                         <span className="text-[#797878] dm-sans text-center">
-                                            {session.checkOutTime ? formatTime(session.checkOutTime) : (
-                                                <span className="text-green-600 font-medium">Active</span>
-                                            )}
+                                            {/* FIX 2: "Active" remove केलं */}
+                                            {session.checkOutTime ? formatTime(session.checkOutTime) : "-"}
                                         </span>
                                         <span className="text-[#797878] dm-sans text-right font-medium">
                                             {formatHours(session.workingHours)}
@@ -115,19 +127,11 @@ const AttendanceTimer = () => {
                             </div>
                         )}
                     </div>
-
-                    {/* Total Hours */}
-                    {/* {!error && sessions.length > 0 && (
-                        <div className="mt-4 pt-4 border-t border-gray-300 text-right pr-4 sm:pr-8 
-                                        text-lg font-semibold text-[#333] dm-sans">
-                            Total: {(totalHours)}
-                        </div>
-                    )} */}
                 </div>
 
                 <div className="flex flex-col gap-6 w-full lg:w-[40%]">
 
-                    {/* Calendar */}
+                    {/* Calendar - कोणताही change नाही */}
                     <div className="bg-white rounded-2xl h-[96%] p-4 sm:p-6 shadow-lg flex flex-col">
                         <div className="flex items-center justify-between mb-4">
                             <button
@@ -187,12 +191,10 @@ const AttendanceTimer = () => {
                         </div>
                     </div>
 
-                    {/* Timer Card */}
                     <div className="bg-white shadow-lg rounded-2xl p-6 sm:p-8 text-center">
                         <h1 className="text-2xl sm:text-3xl md:text-4xl tracking-widest text-black font-mono">
-                            {formatTotalHoursToTimer(totalHours)}
+                            {formatTotalHoursToTimer(attendanceData?.totalWorkingHours)}
                         </h1>
-
                         <p className="mt-3 text-sm sm:text-base text-black dm-sans">
                             {format(selectedDate, "dd MMMM yyyy")}
                         </p>

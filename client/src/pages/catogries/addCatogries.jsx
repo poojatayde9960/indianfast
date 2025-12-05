@@ -292,7 +292,6 @@ const AddCategories = ({ searchTerm }) => {
 
                         <h2 className="text-xl font-semibold text-center mb-6">Edit Category</h2>
 
-                        {/* ✅ FORM TAG + handleSubmitEdit */}
                         <form onSubmit={handleSubmitEdit(onSubmitEdit)}>
 
                             {/* Category Name */}
@@ -341,7 +340,6 @@ const AddCategories = ({ searchTerm }) => {
                                     Cancel
                                 </button>
 
-                                {/* ✅ type="submit" + form submit hoil */}
                                 <button
                                     type="submit"
                                     className="flex-1 py-3 bg-gradient-to-r from-[#FF6F00] to-[#FF9933] text-white rounded-md font-medium"

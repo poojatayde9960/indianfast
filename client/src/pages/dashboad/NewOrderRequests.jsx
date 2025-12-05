@@ -80,7 +80,7 @@ const NewOrderRequests = () => {
                             <div
                                 key={order._id || index}
                                 className="relative bg-white rounded-[19px] shadow-[0_6px_30px_rgba(0,0,0,0.25)] 
-                                    px-4 sm:px-5 pt-6 pb-16 sm:pb-4 mb-7 w-full 
+                                    px-4 sm:px-5 pt-9 pb-16 sm:pb-4 mb-7 w-full 
                                     flex flex-col sm:flex-row justify-between items-start"
                             >
                                 {/* Prep Time Badge */}
@@ -159,7 +159,7 @@ const NewOrderRequests = () => {
                                 </div>
 
                                 {/* RIGHT SECTION */}
-                                <div className="flex flex-col items-end gap-3 mt-6 sm:mt-0 w-full sm:w-auto">
+                                <div className="flex flex-col items-end mb-12 gap-3 mt-2 sm:mt-0 w-full sm:w-auto">
                                     <span className="text-[#4CAF50] font-semibold text-[16px] sm:text-[15px]">
                                         ₹{order?.paymentSummary?.finalAmount || 0}/-
                                     </span>
@@ -193,7 +193,9 @@ const NewOrderRequests = () => {
                 </div>
 
                 {/* RIGHT SIDE – Recent Transactions */}
-                <div className="bg-white rounded-[20px] mt-4 lg:-mt-[40%] w-full lg:w-[85%] lg:ml-11 shadow-[0_4px_20px_rgba(0,0,0,0.08)] p-4 sm:p-5">
+                <div className="bg-white rounded-[20px] mt-4 lg:-mt-[40%] w-full lg:w-[85%] lg:ml-11 shadow-[0_4px_20px_rgba(0,0,0,0.08)] p-4 sm:p-5 
+    flex flex-col h-full"style={{ height: "500px" }} >
+
                     <h3 className="text-gray-700 font-semibold mb-5 sm:mb-8 text-lg sm:text-xl">
                         Recent Transactions
                     </h3>
@@ -203,27 +205,25 @@ const NewOrderRequests = () => {
                         <p>Amount</p>
                     </div>
 
-                    <div className="flex flex-col gap-3 px-1 text-sm">
+                    <div className="flex flex-col gap-3 px-1 text-sm flex-1">
                         {data?.orders
                             ?.filter((order) => order.orderStatus === "delivered")
                             ?.slice(0, 8)
                             ?.map((order, i) => (
-                                <div
-                                    key={i}
-                                    className="flex justify-between items-center py-[6px] border-b border-[#D9D9D94F]"
-                                >
+                                <div key={i} className="flex justify-between items-center py-[6px] border-b border-[#D9D9D94F]">
                                     <p className="text-[#000000] font-Poppins text-[110%]">
                                         {order?.addressId?.name || "Unknown"}
                                     </p>
                                     <p className="text-[#19700B] text-[110%] font-medium">
-                                        +{order?.paymentSummary?.finalAmount || 0}
+                                        +{order?.paymentSummary?.vendorAmount || 0}
                                     </p>
                                 </div>
                             ))}
                     </div>
 
+
                     <p
-                        className="text-right text-lg font-Poppins text-[#808080] hover:text-orange-500 cursor-pointer mt-8 sm:mt-11"
+                        className="text-right text-lg font-Poppins text-[#808080] hover:text-orange-500 cursor-pointer mt-auto pt-6"
                         onClick={() => navigate("/transactions")}
                     >
                         View All
