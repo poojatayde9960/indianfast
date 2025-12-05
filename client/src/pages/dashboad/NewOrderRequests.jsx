@@ -128,8 +128,14 @@ const NewOrderRequests = () => {
 
                                     <div className="mt-4 flex-1 min-h-0">
                                         <div
-                                            className="flex flex-col gap-2.5 max-h-[65px] overflow-y-auto pr-1 
-                   scrollbar-thin scrollbar-thumb-orange-400 scrollbar-track-gray-100"
+                                            className="flex flex-col gap-2.5 max-h-[65px] overflow-y-auto pr-2 
+                   scrollbar scrollbar-thin 
+                   scrollbar-thumb-black 
+                   
+                   scrollbar-track-gray-200
+                   scrollbar-thumb-rounded-full 
+                   scrollbar-track-rounded-full
+                   scrollbar-w-2"
                                         >
                                             {order.services?.[0]?.products?.map((product, pIndex) => (
                                                 <div

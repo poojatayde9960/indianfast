@@ -118,7 +118,6 @@ const Orders = () => {
             alert("You are currently offline. Please go online to accept orders.");
             return;
         }
-        // बाकीचा कोड तसाच
         try {
             await orderAccepted({ id: orderId, orderStatus: "orderAccepted" }).unwrap();
             const updatedOrders = localOrders.map((order) =>
