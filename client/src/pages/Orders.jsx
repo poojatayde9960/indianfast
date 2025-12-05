@@ -47,18 +47,83 @@ const Orders = () => {
     }, [data]);
 
     // Accept order → Ready
+    // const handleAcceptOrder = async (orderId) => {
+    //     if (!isActive) {
+    //         alert("You are currently offline. Please go online to accept orders.");
+    //         return;
+    //     }
+    //     try {
+
+    //         await orderAccepted({ id: orderId, orderStatus: "orderAccepted" }).unwrap();
+    //         const updatedOrders = localOrders.map((order) =>
+    //             order._id === orderId ? { ...order, orderStatus: "orderAccepted" } : order
+    //         );
+
+    //         setLocalOrders(updatedOrders);
+    //         navigate("/orders?tab=Ongoing");
+    //     } catch (err) {
+    //         console.error("Error accepting order:", err);
+    //         alert("Failed to accept order.");
+    //     }
+    // };
+
+
+    // // Reject order
+    // const handleRejectOrder = async (orderId) => {
+    //     if (!isActive) {
+    //         alert("You are currently offline. Please go online to reject orders.");
+    //         return;
+    //     }
+    //     const confirmReject = window.confirm("Are you sure you want to reject this order?");
+    //     if (!confirmReject) return;
+
+    //     try {
+    //         await confirmRejectOrder({ id: orderId, orderStatus: "rejected" }).unwrap();
+    //         const updatedOrders = localOrders.map((order) =>
+    //             order._id === orderId ? { ...order, orderStatus: "rejected" } : order
+    //         );
+    //         setLocalOrders(updatedOrders);
+    //         navigate("/orders?tab=Rejected");
+    //     } catch (err) {
+    //         console.error("Error rejecting order:", err);
+    //         alert("Failed to reject order.");
+    //     }
+    // };
+    // const handleMarkAsReady = async (orderId) => {
+    //     if (!isActive) {
+    //         alert("You are currently offline. Please go online to update order status.");
+    //         return;
+    //     }
+    //     try {
+    //         await confirmRejectOrder({
+    //             id: orderId,
+    //             orderStatus: "orderReady"
+    //         }).unwrap();
+
+    //         const updatedOrders = localOrders.map(order =>
+    //             order._id === orderId ? { ...order, orderStatus: "orderReady" } : order
+    //         );
+
+    //         setLocalOrders(updatedOrders);
+    //         navigate("/orders?tab=Ready");
+
+    //     } catch (err) {
+    //         console.error("Failed to mark as ready:", err);
+    //         alert("Failed to mark order as ready.");
+    //     }
+    // };
+    // Accept order → Ready
     const handleAcceptOrder = async (orderId) => {
         if (!isActive) {
             alert("You are currently offline. Please go online to accept orders.");
             return;
         }
+        // बाकीचा कोड तसाच
         try {
-
             await orderAccepted({ id: orderId, orderStatus: "orderAccepted" }).unwrap();
             const updatedOrders = localOrders.map((order) =>
                 order._id === orderId ? { ...order, orderStatus: "orderAccepted" } : order
             );
-
             setLocalOrders(updatedOrders);
             navigate("/orders?tab=Ongoing");
         } catch (err) {
@@ -66,7 +131,6 @@ const Orders = () => {
             alert("Failed to accept order.");
         }
     };
-
 
     // Reject order
     const handleRejectOrder = async (orderId) => {
@@ -89,30 +153,25 @@ const Orders = () => {
             alert("Failed to reject order.");
         }
     };
+
+    // Mark as Ready (Ongoing → Ready)
     const handleMarkAsReady = async (orderId) => {
         if (!isActive) {
             alert("You are currently offline. Please go online to update order status.");
             return;
         }
         try {
-            await confirmRejectOrder({
-                id: orderId,
-                orderStatus: "orderReady"
-            }).unwrap();
-
+            await confirmRejectOrder({ id: orderId, orderStatus: "orderReady" }).unwrap();
             const updatedOrders = localOrders.map(order =>
                 order._id === orderId ? { ...order, orderStatus: "orderReady" } : order
             );
-
             setLocalOrders(updatedOrders);
             navigate("/orders?tab=Ready");
-
         } catch (err) {
             console.error("Failed to mark as ready:", err);
             alert("Failed to mark order as ready.");
         }
     };
-
 
     const handleDeliveryPickedUp = async (orderId) => {
         if (!isActive) {
@@ -120,20 +179,12 @@ const Orders = () => {
             return;
         }
         try {
-            await confirmRejectOrder({
-                id: orderId,
-
-                orderStatus: "pickup"
-            }).unwrap();
-
+            await confirmRejectOrder({ id: orderId, orderStatus: "pickup" }).unwrap();
             const updatedOrders = localOrders.map((order) =>
                 order._id === orderId ? { ...order, orderStatus: "pickup" } : order
             );
-
             setLocalOrders(updatedOrders);
-
             navigate("/orders?tab=OutForDelivery");
-
         } catch (err) {
             console.error("Failed to mark order as picked up:", err);
             alert("Failed to mark order as picked up.");

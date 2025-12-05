@@ -27,7 +27,7 @@ const AddCategories = ({ searchTerm }) => {
         try {
             await deleteCategory(id).unwrap();
             // alert("Deleted successfully");
-            toast.success("Deleted successfully!!!");
+            toast.error("Deleted successfully!!!");
         } catch (error) {
             console.error("Delete failed:", error);
             alert(error?.data?.message || "Failed to delete product");

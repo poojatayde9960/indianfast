@@ -58,6 +58,7 @@ const NewOrderRequests = () => {
 
     return (
         <>
+            {/* <pre className="text-black">{JSON.stringify(data, null, 2)}</pre> */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* LEFT SIDE – New Requests */}
                 <div className="lg:col-span-2 w-full">
@@ -127,7 +128,7 @@ const NewOrderRequests = () => {
 
                                     <div className="mt-4 flex-1 min-h-0">
                                         <div
-                                            className="flex flex-col gap-2.5 max-h-24 overflow-y-auto pr-1 
+                                            className="flex flex-col gap-2.5 max-h-[65px] overflow-y-auto pr-1 
                    scrollbar-thin scrollbar-thumb-orange-400 scrollbar-track-gray-100"
                                         >
                                             {order.services?.[0]?.products?.map((product, pIndex) => (

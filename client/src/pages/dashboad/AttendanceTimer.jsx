@@ -117,12 +117,12 @@ const AttendanceTimer = () => {
                     </div>
 
                     {/* Total Hours */}
-                    {!error && sessions.length > 0 && (
+                    {/* {!error && sessions.length > 0 && (
                         <div className="mt-4 pt-4 border-t border-gray-300 text-right pr-4 sm:pr-8 
                                         text-lg font-semibold text-[#333] dm-sans">
                             Total: {(totalHours)}
                         </div>
-                    )}
+                    )} */}
                 </div>
 
                 <div className="flex flex-col gap-6 w-full lg:w-[40%]">
