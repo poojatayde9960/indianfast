@@ -31,6 +31,7 @@ import { categoriesApi } from "./apis/categoriesApi";
 import { offerApi } from "./apis/offerApi";
 import { reviewApi } from "./apis/reviewApi";
 import { bankRequestApi } from "./apis/bankRequestApi.js";
+import { settingsApi } from "./apis/setting.js";
 
 
 const rootReducer = combineReducers({
@@ -42,6 +43,7 @@ const rootReducer = combineReducers({
     [categoriesApi.reducerPath]: categoriesApi.reducer,
     [reviewApi.reducerPath]: reviewApi.reducer,
     [bankRequestApi.reducerPath]: bankRequestApi.reducer,
+    [settingsApi.reducerPath]: settingsApi.reducer,
 });
 
 // 🔹 persist config
@@ -65,6 +67,7 @@ export const store = configureStore({
             offerApi.middleware,
             categoriesApi.middleware,
             reviewApi.middleware,
+            settingsApi.middleware,
             bankRequestApi.middleware),
 });
 

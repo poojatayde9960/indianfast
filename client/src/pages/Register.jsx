@@ -12,6 +12,9 @@ import { Icon } from "@iconify/react";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
+import { useRegistretionFessQuery } from "../redux/apis/setting";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 
 delete L.Icon.Default.prototype._getIconUrl;
@@ -58,7 +61,9 @@ const Register = () => {
     const [location, setLocation] = useState({ latitude: null, longitude: null });
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState("");
-
+    const [showPaymentModal, setShowPaymentModal] = useState(false);
+    const [formData, setFormData] = useState(null);
+    const { data: RegistretionFessData } = useRegistretionFessQuery();
     const handleGetLocation = () => {
         if (!navigator.geolocation) {
             setMessage("❌ Geolocation is not supported by your browser.");
@@ -111,26 +116,66 @@ const Register = () => {
         );
     }, []);
 
+    const handlePayment = () => {
+        const fee = RegistretionFessData?.data?.vendorOnboardingFee || 0;
+        const options = {
+            key: import.meta.env.VITE_RAZORPAY_KEY || "rzp_test_1DP5mmOlF5G5ag",
+            amount: fee * 100, // Amount in paisa
+            currency: "INR",
+            name: "Indian Fast Food",
+            description: "Vendor Registration Fee",
+            image: indianFast,
+            handler: async function (response) {
+                try {
+                    const finalFormData = new FormData();
+                    // Append original form data
+                    for (const pair of formData.entries()) {
+                        finalFormData.append(pair[0], pair[1]);
+                    }
+                    // Append payment details
+                    finalFormData.append("paymentId", response.razorpay_payment_id);
+
+                    const res = await vendorRegister(finalFormData).unwrap();
+                    console.log("Registration Success:", res);
+                    toast.success("Payment Successful! Registration Complete.");
+                    reset();
+                    setShowPaymentModal(false);
+                    navigate("/login");
+                } catch (error) {
+                    console.error("Registration Failed:", error);
+                    toast.error("Registration failed. Try again.");
+                }
+            },
+            prefill: {
+                name: formData?.get("ownerName"),
+                email: formData?.get("ownerEmail"),
+                contact: formData?.get("ownerNumber"),
+            },
+            theme: {
+                color: "#FE9611",
+            },
+        };
+
+        const rzp1 = new window.Razorpay(options);
+        rzp1.open();
+    };
+
     const onSubmit = async (values) => {
         try {
-            const formData = new FormData();
+            const data = new FormData();
             Object.entries(values).forEach(([key, value]) => {
-                if (value instanceof FileList) formData.append(key, value[0]);
-                else formData.append(key, value);
+                if (value instanceof FileList) data.append(key, value[0]);
+                else data.append(key, value);
             });
 
             // append location
-            formData.append("latitude", location.latitude);
-            formData.append("longitude", location.longitude);
+            data.append("latitude", location.latitude);
+            data.append("longitude", location.longitude);
 
-            const response = await vendorRegister(formData).unwrap();
-            console.log("Registration Success:", response);
-            alert("Shop registered successfully! Pending approval.");
-            reset();
-            navigate("/login");
+            setFormData(data);
+            setShowPaymentModal(true);
         } catch (error) {
-            console.error("Registration Failed:", error);
-            alert("Registration failed. Try again.");
+            console.error("Form preparation failed:", error);
         }
     };
 
@@ -366,6 +411,36 @@ const Register = () => {
                     Register
                 </button>
             </form>
+
+            {/* Payment Modal */}
+            {showPaymentModal && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm">
+                    <div className="bg-white text-black p-6 rounded-lg shadow-xl w-[90%] md:w-[400px]">
+                        <h3 className="text-xl font-bold mb-4 text-center">Registration Fee</h3>
+                        <p className="text-center mb-6 text-gray-700">
+                            To complete your registration, you need to pay a one-time fee of:
+                            <br />
+                            <span className="text-2xl font-bold text-[#FE9611]">
+                                ₹{RegistretionFessData?.data?.vendorOnboardingFee || 0}
+                            </span>
+                        </p>
+                        <div className="flex gap-4 justify-center">
+                            <button
+                                onClick={() => setShowPaymentModal(false)}
+                                className="px-4 py-2 rounded-md border border-gray-300 hover:bg-gray-100 transition"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={handlePayment}
+                                className="px-6 py-2 rounded-md bg-[#FE9611] text-white font-semibold hover:bg-[#e0850f] transition"
+                            >
+                                Yes, Pay & Register
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
