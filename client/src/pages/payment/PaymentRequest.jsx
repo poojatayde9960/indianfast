@@ -12,7 +12,7 @@ const PaymentRequest = () => {
         handleSubmit,
         formState: { errors },
     } = useForm();
-
+    const [BankRequest] = useBankRequestMutation();
     const onSubmit = async (data) => {
         try {
             await BankRequest({
@@ -21,7 +21,7 @@ const PaymentRequest = () => {
                 bankAccountOrUpiId: data.bankAccountNumber,
                 accountHolderName: data.accountHolderName,
                 ifscCode: data.ifscCode,
-                remark: data.remark,
+                remark: data.remark || "",
             }).unwrap();
             toast.success("Request Submitted Successfully!");
             setOpenPopup(false);
@@ -148,8 +148,27 @@ const PaymentRequest = () => {
                                 <input
                                     type="number"
                                     className="w-full border border-gray-300 text-black p-2 rounded mt-1"
-                                    {...register("amount", { required: true })}
+                                    {...register("amount", {
+                                        required: "Amount is required",
+                                        validate: (value) => {
+                                            if (Number(value) <= 0) return "Amount must be greater than 0";
+                                            if (Number(value) > balance)
+                                                return "You cannot request more than your available balance";
+                                            return true;
+                                        },
+                                    })}
                                 />
+
+                                {errors.amount && (
+                                    <p className="text-red-600 text-sm mt-1">{errors.amount.message}</p>
+                                )}
+
+                                {/* <label className="text-gray-600">Amount</label>
+                                <input
+                                    type="number"
+                                    className="w-full border border-gray-300 text-black p-2 rounded mt-1"
+                                    {...register("amount", { required: true })}
+                                /> */}
                             </div>
 
 

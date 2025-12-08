@@ -35,14 +35,20 @@ const Dashboard = () => {
         const isOnline = ShopStatusData.status === "Checked In";
         dispatch(setActive(isOnline));
 
-        if (isOnline && ShopStatusData.totalWorkingHours) {
+        if (ShopStatusData.totalWorkingHours) {
             const totalSeconds = parseTotalWorkingHours(ShopStatusData.totalWorkingHours);
             setElapsedSeconds(totalSeconds);
+
+            const h = String(Math.floor(totalSeconds / 3600)).padStart(2, "0");
+            const m = String(Math.floor((totalSeconds % 3600) / 60)).padStart(2, "0");
+            const s = String(totalSeconds % 60).padStart(2, "0");
+            setDuration(`${h} : ${m} : ${s}`);
         } else {
             setElapsedSeconds(0);
             setDuration("00 : 00 : 00");
         }
     };
+
 
 
     useEffect(() => {
@@ -65,8 +71,7 @@ const Dashboard = () => {
                 const totalSeconds = parseTotalWorkingHours(res.totalWorkingHours);
                 setElapsedSeconds(totalSeconds);
             } else {
-                setElapsedSeconds(0);
-                setDuration("00 : 00 : 00");
+
             }
 
         } catch (err) {
@@ -79,10 +84,7 @@ const Dashboard = () => {
     const [elapsedSeconds, setElapsedSeconds] = useState(0);
 
     useEffect(() => {
-        if (!isActive) {
-            setDuration("00 : 00 : 00");
-            return;
-        }
+        if (!isActive) return; // जर ऑफलाइन असेल तर टाइमर सुरू होणार नाही
 
         const interval = setInterval(() => {
             setElapsedSeconds(prev => {
@@ -97,6 +99,8 @@ const Dashboard = () => {
 
         return () => clearInterval(interval);
     }, [isActive]);
+
+
 
     // Orders
     const orders = data?.orders || [];
