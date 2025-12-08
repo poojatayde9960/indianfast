@@ -4,11 +4,10 @@ import { useBankRequestMutation, useGetShopBankRequestsQuery } from "../../redux
 import { useSelector } from "react-redux";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
+import { useGetProfileQuery } from "../../redux/apis/vendorApi";
 
 const PaymentRequest = () => {
-
-    const [BankRequest] = useBankRequestMutation();
-
+    const [BankRequest, { data: bacnkReqData }] = useBankRequestMutation();
     const {
         register,
         handleSubmit,
@@ -35,8 +34,12 @@ const PaymentRequest = () => {
     };
 
     const shopId = useSelector((state) => state.auth.shopId);
+    const { data: profileData } = useGetProfileQuery(shopId);
+
     const { data } = useGetShopBankRequestsQuery(shopId);
-    const balance = data?.data?.[0]?.shopId?.points ?? 0;
+
+    const balance = profileData?.shop?.points ?? 0;
+
 
     const navigate = useNavigate();
     const [openPopup, setOpenPopup] = useState(false);
@@ -67,7 +70,7 @@ const PaymentRequest = () => {
 
     return (
         <>
-            {/* <pre className="text-black mt-20">{JSON.stringify(data, null, 2)}</pre> */}
+            <pre className="text-black mt-20">{JSON.stringify(profileData, null, 2)}</pre>
             {/* POPUP */}
             {openPopup && (
                 <div className="fixed inset-0 mt-20 bg-opacity-40  flex items-center justify-center z-50 px-4">
