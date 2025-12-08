@@ -13,8 +13,6 @@ import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { useRegistretionFessQuery } from "../redux/apis/setting";
-import { toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 
 
 delete L.Icon.Default.prototype._getIconUrl;
@@ -137,13 +135,13 @@ const Register = () => {
 
                     const res = await vendorRegister(finalFormData).unwrap();
                     console.log("Registration Success:", res);
-                    toast.success("Payment Successful! Registration Complete.");
+                    alert("Shop registered successfully! Pending approval.");
                     reset();
                     setShowPaymentModal(false);
                     navigate("/login");
                 } catch (error) {
                     console.error("Registration Failed:", error);
-                    toast.error("Registration failed. Try again.");
+                    alert("Registration failed. Try again.");
                 }
             },
             prefill: {

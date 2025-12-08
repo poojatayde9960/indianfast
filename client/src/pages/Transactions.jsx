@@ -448,7 +448,9 @@ const Transactions = () => {
         </div>
         {selectedOrder && (
             <div className="fixed inset-0 bg-black/40 flex justify-center items-center z-50">
-                <div className="bg-white w-[90%] max-w-lg mt-20 md:mt-40 md:mr-12 h-auto max-h-[80vh] md:h-[20%] rounded-2xl p-5 relative shadow-xl overflow-y-auto">
+                {/* <div className="bg-white w-[90%] max-w-lg mt-20 md:mt-40 md:mr-12 h-auto max-h-[80vh] md:h-[20%] rounded-2xl p-5 relative shadow-xl overflow-y-auto"> */}
+                <div className="bg-white w-[90%] max-w-lg mt-20 md:mt-40 md:mr-12 
+     h-auto max-h-[80vh] rounded-2xl p-5 relative shadow-xl overflow-y-auto">
 
                     {/* Close Button */}
                     <button

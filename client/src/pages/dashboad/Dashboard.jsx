@@ -49,12 +49,31 @@ const Dashboard = () => {
     useEffect(() => {
         refreshStatusAndTimer();
     }, [shopId]);
-
     const handleToggleAvailability = async () => {
         if (!shopId || isToggling) return;
 
-        dispatch(setActive(!isActive)); // 
-        await refreshStatusAndTimer(); // 
+        try {
+            const previousStatus = isActive;
+            dispatch(setActive(!previousStatus)); // 
+
+            const res = await toggleAvailability({ ShopId: shopId }).unwrap();
+
+            const newStatus = res.status === "Checked In";
+            dispatch(setActive(newStatus)); // 
+
+            if (newStatus && res.totalWorkingHours) {
+                const totalSeconds = parseTotalWorkingHours(res.totalWorkingHours);
+                setElapsedSeconds(totalSeconds);
+            } else {
+                setElapsedSeconds(0);
+                setDuration("00 : 00 : 00");
+            }
+
+        } catch (err) {
+            console.error("Toggle failed", err);
+            dispatch(setActive(!isActive));
+            alert("Failed to change availability. Please try again.");
+        }
     };
 
     const [elapsedSeconds, setElapsedSeconds] = useState(0);
