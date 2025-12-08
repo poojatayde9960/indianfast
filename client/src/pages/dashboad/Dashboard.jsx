@@ -4,7 +4,7 @@ import { useNavigate, useOutletContext } from "react-router-dom";
 import NewOrderRequests from "./NewOrderRequests";
 import { useGetOrderByShopIdQuery } from "../../redux/apis/orderApi";
 import { useDispatch, useSelector } from "react-redux";
-import { useToggleAvailabilityMutation } from "../../redux/apis/attendance";
+import { useGetShopStatusQuery, useToggleAvailabilityMutation } from "../../redux/apis/attendance";
 import { setActive, setCheckInTime } from "../../redux/slices/vendorSlice";
 import { IoIosArrowForward } from "react-icons/io";
 
@@ -16,6 +16,10 @@ const Dashboard = () => {
     const { isActive = false, shopId = null } = useSelector(state => state.auth || {});
 
     const [toggleAvailability, { isLoading: isToggling }] = useToggleAvailabilityMutation();
+    const { data: ShopStatusData, isLoading: isStatusLoading } = useGetShopStatusQuery(shopId, {
+        skip: !shopId
+    });
+
     const { data, isLoading } = useGetOrderByShopIdQuery(shopId, { skip: !shopId });
     const { setPageTitle } = useOutletContext();
 
@@ -26,29 +30,25 @@ const Dashboard = () => {
     };
 
     const refreshStatusAndTimer = async () => {
-        if (!shopId) return;
+        if (!ShopStatusData) return;
 
-        try {
-            const res = await toggleAvailability({ ShopId: shopId }).unwrap();
+        const isOnline = ShopStatusData.status === "Checked In";
+        dispatch(setActive(isOnline));
 
-            const isOnline = res.status === "Checked In";
-            dispatch(setActive(isOnline));
-
-            if (isOnline && res.totalWorkingHours) {
-                const totalSeconds = parseTotalWorkingHours(res.totalWorkingHours);
-                setElapsedSeconds(totalSeconds);
-            } else {
-                setElapsedSeconds(0);
-                setDuration("00 : 00 : 00");
-            }
-        } catch (err) {
-            console.error("Failed to refresh status", err);
+        if (isOnline && ShopStatusData.totalWorkingHours) {
+            const totalSeconds = parseTotalWorkingHours(ShopStatusData.totalWorkingHours);
+            setElapsedSeconds(totalSeconds);
+        } else {
+            setElapsedSeconds(0);
+            setDuration("00 : 00 : 00");
         }
     };
 
+
     useEffect(() => {
-        refreshStatusAndTimer();
-    }, [shopId]);
+        if (ShopStatusData) refreshStatusAndTimer();
+    }, [ShopStatusData]);
+
     const handleToggleAvailability = async () => {
         if (!shopId || isToggling) return;
 

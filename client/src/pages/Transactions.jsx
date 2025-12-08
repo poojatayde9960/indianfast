@@ -57,7 +57,6 @@ const Transactions = () => {
             method: "Online",
             status: order.orderStatus,
 
-            // 👉👉 FIX ADDED: vendorAmount
             vendorAmount:
                 order.paymentSummary?.vendorAmount ??
                 order.vendorAmount ??
@@ -452,7 +451,6 @@ const Transactions = () => {
                 <div className="bg-white w-[90%] max-w-lg mt-20 md:mt-40 md:mr-12 
      h-auto max-h-[80vh] rounded-2xl p-5 relative shadow-xl overflow-y-auto">
 
-                    {/* Close Button */}
                     <button
                         onClick={() => setSelectedOrder(null)}
                         className="absolute top-3  right-3 text-gray-500 hover:text-black text-xl"
@@ -460,7 +458,6 @@ const Transactions = () => {
                         ✕
                     </button>
 
-                    {/* Header */}
                     <div className="flex items-center mt-4 gap-4 pb-3">
                         <div className="bg-orange-500 p-3 rounded-full text-white text-3xl">
                             <img src={vector} alt="User" className="" />

@@ -118,7 +118,7 @@ const Register = () => {
         const fee = RegistretionFessData?.data?.vendorOnboardingFee || 0;
         const options = {
             key: import.meta.env.VITE_RAZORPAY_KEY || "rzp_test_1DP5mmOlF5G5ag",
-            amount: fee * 100, // Amount in paisa
+            amount: fee * 100, //
             currency: "INR",
             name: "Indian Fast Food",
             description: "Vendor Registration Fee",
@@ -126,11 +126,9 @@ const Register = () => {
             handler: async function (response) {
                 try {
                     const finalFormData = new FormData();
-                    // Append original form data
                     for (const pair of formData.entries()) {
                         finalFormData.append(pair[0], pair[1]);
                     }
-                    // Append payment details
                     finalFormData.append("paymentId", response.razorpay_payment_id);
 
                     const res = await vendorRegister(finalFormData).unwrap();

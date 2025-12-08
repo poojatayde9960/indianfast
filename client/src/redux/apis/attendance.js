@@ -9,14 +9,11 @@ export const attendanceApi = createApi({
     tagTypes: ["order"],
     endpoints: (builder) => {
         return {
-
-            user: builder.query({
-                query: () => {
-                    return {
-                        url: `user`,
-                        method: "GET"
-                    }
-                },
+            getShopStatus: builder.query({
+                query: (shopId) => ({
+                    url: `getShoplastStatus/${shopId}`,
+                    method: "GET",
+                }),
                 providesTags: ["order"]
             }),
 
@@ -58,4 +55,5 @@ export const attendanceApi = createApi({
     }
 })
 
-export const { useToggleAvailabilityMutation, useGetToggleAvailabilityMutation, useAttendanceGetDashbordMutation, useGetDashboardQuery } = attendanceApi
+export const { useToggleAvailabilityMutation,
+    useGetShopStatusQuery, useGetToggleAvailabilityMutation, useAttendanceGetDashbordMutation, useGetDashboardQuery } = attendanceApi
