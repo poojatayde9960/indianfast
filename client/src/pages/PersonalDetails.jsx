@@ -68,9 +68,9 @@ const PersonalDetails = () => {
                 hotelAddress: s.hotelAddress || "",
                 hotelPhone: s.hotelNumber || "",
 
-                areaName: s.locations?.area || "",
-                city: s.locations?.city || "",
-                pinCode: s.locations?.pincode || "",
+                areaName: s.hotelArea || "",
+                city: "",
+                pinCode: "",
 
                 gstNumber: s.enterGSTNumber || "",
                 shopLicense: s.shopActLicenseNo || "",
