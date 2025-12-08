@@ -549,12 +549,12 @@ const Orders = () => {
 
                     <button
                         onClick={() => setSelectedOrder(null)}
-                        className="absolute top-3 right-3 text-gray-500 hover:text-black text-xl"
+                        className="absolute top-2 right-3 text-gray-500 hover:text-black text-xl"
                     >
                         ✕
                     </button>
 
-                    <div className="flex items-center gap-4  pb-3">
+                    <div className="flex items-center gap-4 mt-4  pb-3">
                         <div className="bg-orange-500 p-3 rounded-full text-white text-3xl">
                             <img src={vector} alt="User" className="" />
                         </div>

@@ -21,77 +21,65 @@ const Review = () => {
     };
     if (isLoading) {
         return (
-            <div className="bg-white rounded-[15px] border shadow p-5 animate-pulse">
-                <div className="h-6 w-40 bg-slate-300 rounded mb-6"></div>
+            <div className="p-4 sm:p-5 md:p-6 bg-[#F5F5F5] mt-20 min-h-[calc(100vh-80px)] overflow-y-auto">
 
-                <div className="overflow-x-auto">
-                    <table className="w-full min-w-[700px]">
-                        <thead>
-                            <tr>
-                                <th className="px-5 py-3">
-                                    <div className="h-4 w-16 bg-slate-300 rounded"></div>
-                                </th>
-                                <th className="px-5 py-3">
-                                    <div className="h-4 w-24 bg-slate-300 rounded"></div>
-                                </th>
-                                <th className="px-5 py-3">
-                                    <div className="h-4 w-28 bg-slate-300 rounded"></div>
-                                </th>
-                                <th className="px-5 py-3">
-                                    <div className="h-4 w-20 bg-slate-300 rounded"></div>
-                                </th>
-                                <th className="px-5 py-3">
-                                    <div className="h-4 w-16 bg-slate-300 rounded"></div>
-                                </th>
-                                <th className="px-5 py-3">
-                                    <div className="h-4 w-14 bg-slate-300 rounded"></div>
-                                </th>
-                                <th className="px-5 py-3"></th>
-                            </tr>
-                        </thead>
+                {/* SHOP CARD SKELETON */}
+                <div className="bg-white rounded-xl border shadow p-6 animate-pulse flex gap-6 items-center">
 
-                        <tbody>
-                            {Array.from({ length: 6 }).map((_, idx) => (
-                                <tr key={idx} className="border-b">
-                                    <td className="px-5 py-4">
-                                        <div className="w-14 h-14 bg-slate-300 rounded"></div>
-                                    </td>
+                    {/* IMAGE */}
+                    <div className="w-28 h-28 bg-slate-300 rounded-xl"></div>
 
-                                    <td className="px-5 py-4">
-                                        <div className="h-3 w-32 bg-slate-300 rounded"></div>
-                                    </td>
+                    {/* TEXT */}
+                    <div className="flex-1">
+                        <div className="h-5 w-40 bg-slate-300 rounded mb-3"></div>
+                        <div className="h-4 w-52 bg-slate-300 rounded mb-3"></div>
 
-                                    <td className="px-5 py-4">
-                                        <div className="h-3 w-48 bg-slate-300 rounded"></div>
-                                    </td>
-
-                                    <td className="px-5 py-4">
-                                        <div className="h-3 w-20 bg-slate-300 rounded"></div>
-                                    </td>
-
-                                    <td className="px-5 py-4">
-                                        <div className="h-3 w-16 bg-slate-300 rounded"></div>
-                                    </td>
-
-                                    <td className="px-5 py-4">
-                                        <div className="h-3 w-20 bg-slate-300 rounded"></div>
-                                    </td>
-
-                                    <td className="px-5 py-4">
-                                        <div className="flex gap-4">
-                                            <div className="w-5 h-5 bg-slate-300 rounded"></div>
-                                            <div className="w-5 h-5 bg-slate-300 rounded"></div>
-                                            <div className="w-10 h-5 bg-slate-300 rounded-full"></div>
-                                        </div>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                        <div className="flex gap-2 items-center">
+                            <div className="w-6 h-6 bg-slate-300 rounded-full"></div>
+                            <div className="h-4 w-32 bg-slate-300 rounded"></div>
+                        </div>
+                    </div>
                 </div>
+
+                {/* USER FEEDBACK HEADING */}
+                <div className="h-6 w-48 bg-slate-300 rounded mt-8 animate-pulse"></div>
+
+                {/* REVIEW CARDS SKELETON */}
+                <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {Array.from({ length: 4 }).map((_, idx) => (
+                        <div key={idx} className="bg-white border rounded-xl p-5 animate-pulse">
+
+                            <div className="flex items-center gap-4">
+                                {/* Avatar */}
+                                <div className="h-12 w-12 bg-slate-300 rounded-full"></div>
+
+                                <div className="flex-1">
+                                    <div className="h-4 w-32 bg-slate-300 rounded mb-2"></div>
+
+                                    {/* Stars */}
+                                    <div className="flex gap-1">
+                                        {Array.from({ length: 5 }).map((_, i) => (
+                                            <div key={i} className="w-4 h-4 bg-slate-300 rounded"></div>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Comment */}
+                            <div className="mt-4 space-y-2">
+                                <div className="h-3 w-full bg-slate-300 rounded"></div>
+                                <div className="h-3 w-3/4 bg-slate-300 rounded"></div>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+
+                <div className="h-20"></div>
             </div>
         );
     }
+
+
     return <>
 
 
@@ -128,12 +116,12 @@ const Review = () => {
 
             <p className="mt-6 text-xl font-semibold text-gray-800">User Feedback</p>
 
-            <div className="mt-4">
+            <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-6">
                 {reviews.length > 0 ? (
                     reviews.map((item, index) => (
                         <div
                             key={index}
-                            className="bg-white border border-[#FF9129] rounded-xl p-5 mt-4 w-[60%]"
+                            className="bg-white border border-[#FF9129] rounded-xl p-5"
                         >
                             {/* USER ROW */}
                             <div className="flex items-center gap-4">
@@ -159,9 +147,10 @@ const Review = () => {
                         </div>
                     ))
                 ) : (
-                    <p className="text-center text-gray-500 mt-10">No Reviews Found</p>
+                    <p className="text-center text-gray-500 mt-10 col-span-2">No Reviews Found</p>
                 )}
             </div>
+
 
             <div className="h-20" />
         </div >

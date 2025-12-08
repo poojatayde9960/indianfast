@@ -7,7 +7,6 @@ import { toast } from "react-toastify";
 import { useGetProfileQuery } from "../../redux/apis/vendorApi";
 
 const PaymentRequest = () => {
-    const [BankRequest, { data: bacnkReqData }] = useBankRequestMutation();
     const {
         register,
         handleSubmit,
@@ -34,7 +33,7 @@ const PaymentRequest = () => {
     };
 
     const shopId = useSelector((state) => state.auth.shopId);
-    const { data: profileData } = useGetProfileQuery(shopId);
+    const { data: profileData, isLoading } = useGetProfileQuery(shopId);
 
     const { data } = useGetShopBankRequestsQuery(shopId);
 
@@ -67,11 +66,66 @@ const PaymentRequest = () => {
             })
         );
     };
+    if (isLoading) {
+        return (
+            <div className="p-4 sm:p-5 md:p-6 bg-[#F5F5F5] mt-20 min-h-[calc(100vh-80px)] overflow-y-auto animate-pulse">
+
+                <div className="flex flex-col md:flex-row gap-4">
+
+                    <div
+                        className="rounded-2xl overflow-hidden shadow-lg p-5 flex-1"
+                        style={{
+                            background: "linear-gradient(180deg, #EF9C01 0%, #FF9129 100%)",
+                        }}
+                    >
+                        <div className="h-4 w-32 bg-white/40 rounded"></div>
+
+                        <div className="mt-4 h-10 w-40 bg-white/40 rounded"></div>
+
+                        <div
+                            className="mt-6 h-10 w-44 rounded-lg shadow-md bg-white/30"
+                        ></div>
+                    </div>
+
+                    <div className="bg-white rounded-2xl p-5 flex-1 shadow">
+                        <div className="h-4 w-28 bg-slate-200 rounded"></div>
+                        <div className="mt-5 h-10 w-24 bg-slate-300 rounded"></div>
+                    </div>
+                </div>
+
+                <div className="mt-10 bg-white shadow rounded-xl overflow-hidden">
+                    <div className="border border-gray-300 rounded-xl p-4 md:p-6">
+
+                        <div className="grid grid-cols-7 gap-4 mb-4">
+                            {[...Array(7)].map((_, i) => (
+                                <div key={i} className="h-4 bg-slate-200 rounded"></div>
+                            ))}
+                        </div>
+
+                        <div className="space-y-3">
+                            {[...Array(5)].map((_, i) => (
+                                <div
+                                    key={i}
+                                    className="grid grid-cols-7 gap-4 py-3 border-b border-gray-100"
+                                >
+                                    {[...Array(7)].map((_, j) => (
+                                        <div
+                                            key={j}
+                                            className="h-4 bg-slate-100 rounded"
+                                        ></div>
+                                    ))}
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <>
             {/* <pre className="text-black mt-20">{JSON.stringify(profileData, null, 2)}</pre> */}
-            {/* POPUP */}
             {openPopup && (
                 <div className="fixed inset-0 mt-20 bg-opacity-40  flex items-center justify-center z-50 px-4">
 
@@ -143,8 +197,8 @@ const PaymentRequest = () => {
                     </form>
                 </div>
             )}
-
-            <div className="p-4 sm:p-5 md:p-6 mt-20  bg-[#F5F5F5] min-h-[calc(100vh-80px)] overflow-y-auto">
+            <div className="p-4 sm:p-5 md:p-6 bg-[#F5F5F5] mt-20 min-h-[calc(100vh-80px)] md:h-[calc(100vh-80px)] overflow-y-auto transition-all duration-500">
+                {/* <div className="p-4 sm:p-5 md:p-6 mt-20  bg-[#F5F5F5] min-h-[calc(100vh-80px)] overflow-y-auto"> */}
 
                 <div className="flex flex-col md:flex-row gap-4 items-stretch">
 
@@ -223,7 +277,7 @@ const PaymentRequest = () => {
 
                     </div>
                 </div>
-            </div>
+            </div >
         </>
     );
 };

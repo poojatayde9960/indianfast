@@ -75,6 +75,7 @@ const Register = () => {
             (position) => {
                 const { latitude, longitude } = position.coords;
                 setLocation({ latitude, longitude });
+                fetchAddress(latitude, longitude);
                 setMessage("✅ Location fetched successfully!");
                 setLoading(false);
             },
@@ -97,10 +98,23 @@ const Register = () => {
         handleSubmit,
         formState: { errors },
         reset,
+        setValue,
     } = useForm({
         resolver: yupResolver(schema),
         mode: "onBlur",
     });
+
+    const fetchAddress = async (lat, lon) => {
+        try {
+            const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`);
+            const data = await response.json();
+            if (data && data.display_name) {
+                setValue("hotelAddress", data.display_name);
+            }
+        } catch (error) {
+            console.error("Error fetching address:", error);
+        }
+    };
 
     useEffect(() => {
         navigator.geolocation.getCurrentPosition(
@@ -109,6 +123,7 @@ const Register = () => {
                     latitude: pos.coords.latitude,
                     longitude: pos.coords.longitude,
                 });
+                fetchAddress(pos.coords.latitude, pos.coords.longitude);
             },
             (err) => console.warn("Location access denied:", err)
         );
@@ -245,6 +260,7 @@ const Register = () => {
                         <input {...register("hotelName")} placeholder="Hotel Name" className={inputClass("hotelName")} />
                         <input {...register("hotelEmail")} placeholder="Hotel Email" className={inputClass("hotelEmail")} />
                         <input {...register("hotelAddress")} placeholder="Hotel Address" className={inputClass("hotelAddress")} />
+                        <input {...register("hotelArea")} placeholder="Hotel hotelArea" className={inputClass("hotelArea")} />
                         <div className="relative">
                             <input {...register("hotelNumber")} maxLength={10} type="tel" placeholder="Hotel Phone Number" className={inputClass("hotelNumber")} />
                             {errors.hotelNumber && (

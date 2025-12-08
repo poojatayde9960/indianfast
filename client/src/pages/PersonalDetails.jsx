@@ -232,6 +232,24 @@ const PersonalDetails = () => {
                             )}
                         </div>
 
+                        {/* Hotel Area */}
+                        <div>
+                            <label className="block text-[#1E1E1E] text-[17px] mb-2 font-medium">
+                                Hotel Area
+                            </label>
+                            <input
+                                type="text"
+                                name="areaName"
+                                placeholder="Area Name"
+                                className={handleClass("areaName")}
+                                {...formik.getFieldProps("areaName")}
+                                readOnly
+                            />
+                            {formik.touched.areaName && formik.errors.areaName && (
+                                <p className="text-red-500 text-sm mt-1">{formik.errors.areaName}</p>
+                            )}
+                        </div>
+
                         {/* Hotel Phone Number */}
                         <div>
                             <label className="block text-[#1E1E1E] text-[17px] mb-2 font-medium">
