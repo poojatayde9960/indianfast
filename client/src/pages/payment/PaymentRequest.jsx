@@ -70,7 +70,7 @@ const PaymentRequest = () => {
 
     return (
         <>
-            <pre className="text-black mt-20">{JSON.stringify(profileData, null, 2)}</pre>
+            {/* <pre className="text-black mt-20">{JSON.stringify(profileData, null, 2)}</pre> */}
             {/* POPUP */}
             {openPopup && (
                 <div className="fixed inset-0 mt-20 bg-opacity-40  flex items-center justify-center z-50 px-4">
