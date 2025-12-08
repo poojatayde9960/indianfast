@@ -31,7 +31,7 @@ const schema = yup.object().shape({
         .string()
         .matches(/^[0-9]{10}$/, "Enter valid 10-digit number")
         .required("Owner Number is required"),
-
+    hotelCity: yup.string().required("Hotel City is required"),
     hotelName: yup.string().required("Hotel Name is required"),
     hotelEmail: yup.string().email("Invalid email").required("Hotel Email is required"),
     hotelAddress: yup.string().required("Hotel Address is required"),
@@ -106,10 +106,15 @@ const Register = () => {
 
     const fetchAddress = async (lat, lon) => {
         try {
-            const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`);
+            const response = await fetch(
+                `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`
+            );
             const data = await response.json();
-            if (data && data.display_name) {
-                setValue("hotelAddress", data.display_name);
+            if (data) {
+                if (data.display_name) setValue("hotelAddress", data.display_name);
+                if (data.address?.city) setValue("hotelCity", data.address.city);
+                else if (data.address?.town) setValue("hotelCity", data.address.town);
+                else if (data.address?.village) setValue("hotelCity", data.address.village);
             }
         } catch (error) {
             console.error("Error fetching address:", error);
@@ -267,6 +272,11 @@ const Register = () => {
                                 <p className="absolute -bottom-5 left-0 text-red-500 text-xs">{errors.hotelNumber.message}</p>
                             )}
                         </div>
+                        <input
+                            {...register("hotelCity")}
+                            placeholder="Hotel City"
+                            className={inputClass("hotelCity")}
+                        />
 
                         {/* Hotel Image */}
                         <div className="col-span-1 md:col-span-2">

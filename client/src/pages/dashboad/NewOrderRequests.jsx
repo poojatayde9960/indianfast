@@ -161,7 +161,7 @@ const NewOrderRequests = () => {
                                 {/* RIGHT SECTION */}
                                 <div className="flex flex-col items-end mb-12 gap-3 mt-2 sm:mt-0 w-full sm:w-auto">
                                     <span className="text-[#4CAF50] font-semibold text-[16px] sm:text-[15px]">
-                                        ₹{order?.paymentSummary?.finalAmount || 0}/-
+                                        ₹{order?.paymentSummary?.vendorAmount || 0}/-
                                     </span>
 
                                     {/* Accept / Reject Buttons */}
