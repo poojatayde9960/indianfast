@@ -91,7 +91,7 @@ const Navbar = ({ title, searchTerm, setSearchTerm }) => {
                 ></div>
             )}
 
-            <nav className="fixed top-0 left-0 right-0 md:left-72 h-[70px] md:h-[80px]  flex items-center justify-between px-4 md:px-8  z-50">
+            <nav className="fixed top-0 left-0 right-0 md:left-72 h-[70px] md:h-[80px] flex items-center justify-between px-4 md:px-8 z-50 bg-white/80 backdrop-blur-md shadow-sm">
                 {/* Left Section */}
                 <div className="flex items-center gap-4 md:gap-6">
 

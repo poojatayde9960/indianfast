@@ -152,10 +152,10 @@ const AddItem = ({ searchTerm }) => {
     };
     if (isLoading) {
         return (
-            <div className="bg-white rounded-[15px] border shadow p-5 animate-pulse">
-                <div className="h-6 w-40 bg-slate-300 rounded mb-6"></div>
+            <div className="bg-white rounded-[15px] overflow-hidden border shadow p-5 animate-pulse">
+                <div className="h-6 w-40 bg-slate-300 rounded overflow-hidden mb-6"></div>
 
-                <div className="overflow-x-auto">
+                <div className="overflow-hidden">
                     <table className="w-full min-w-[700px]">
                         <thead>
                             <tr>
@@ -246,101 +246,91 @@ const AddItem = ({ searchTerm }) => {
         )}
 
         {/* Table */}
-        <div className="bg-white rounded-[15px] border shadow p-5">
+        <div className="bg-white rounded-[15px] border overflow-hidden shadow p-5">
 
             <div className="overflow-x-auto hidden md:block">
-                <table className="w-full min-w-[700px] text-[14px]">
+                {/* Header Table */}
+                <table className="w-full min-w-[700px] text-[14px] border-collapse">
                     <thead className="bg-[#F5F5F5] text-[#000000] h-14">
                         <tr>
-                            <th className="text-left px-5">Image</th>
-                            <th className="text-left px-5">Item Name</th>
-                            <th className="text-left px-5">Description</th>
-                            <th className="text-left px-5">Availability</th>
-                            <th className="text-left px-5">Prep Time</th>
-                            <th className="text-left px-5">Price</th>
-                            <th className="text-left px-5"></th>
+                            <th className="text-left px-5 w-[10%]">Image</th>
+                            <th className="text-left px-5 w-[20%]">Item Name</th>
+                            <th className="text-left px-5 w-[25%]">Description</th>
+                            <th className="text-left px-5 w-[15%]">Availability</th>
+                            <th className="text-left px-5 w-[10%]">Prep Time</th>
+                            <th className="text-left px-5 w-[10%]">Price</th>
+                            <th className="text-left px-5 w-[10%]"></th>
                         </tr>
                     </thead>
-                    <tbody>
-                        {filteredProducts.length === 0 ? (
-                            <tr>
-                                <td colSpan="7" className="py-10">
-                                    <div className="flex flex-col items-center justify-center animate-fadeIn">
-                                        <img
-                                            src="https://cdn-icons-png.flaticon.com/512/4076/4076432.png"
-                                            alt="No items"
-                                            className="w-28 h-28 opacity-80 mb-3"
-                                        />
-                                        <h2 className="text-lg font-semibold text-gray-700">No Items Found</h2>
-                                        <p className="text-gray-500 mt-1 text-sm">Try adding a new item or change your search.</p>
-                                    </div>
-                                </td>
-                            </tr>
-                        ) : (
-                            filteredProducts.map(item => (
-                                <tr key={item._id} className="border-b hover:bg-gray-50">
-                                    <td className="py-4 px-5">
-                                        <img src={item.image} alt="" className="w-14 h-14 object-cover rounded" />
-                                    </td>
+                </table>
 
-                                    <td className="py-4 px-5 font-medium text-black">{item.name}</td>
-
-                                    <td className="py-4 px-5 text-gray-600">{item.description}</td>
-                                    {/* <p className={`mt-2 font-medium ${item.available ? "text-green-600" : "text-red-600"}`}>
-                                        {item.available ? "Available" : "Not Available"}
-                                    </p> */}
-                                    <td className={`py-4 px-5 font-medium ${item.available ? "text-green-600" : "text-red-600"}`}>
-                                        {item.available ? "Available" : "Not Available"}
-                                    </td>
-
-                                    <td className="py-4 text-black px-5">{item.preparationTime} mins</td>
-
-                                    <td className="py-4 text-black px-5">Rs.{item.price}</td>
-
-                                    <td className="py-4 px-5">
-                                        <div className="flex items-center gap-4">
-                                            <button className="hover:scale-110" onClick={() => openEditModal(item)}>
-                                                <img src={edit} alt="edit" className="w-5 h-5" />
-                                            </button>
-                                            <button onClick={() => handleDelete(item._id)}>
-                                                <img src={deleteIcon} alt="delete" className="w-5 h-5" />
-                                            </button>
-                                            {/*   <button
-                                        onClick={() => productToggle(item._id)}
-                                        disabled={toggleLoading}
-                                        className={`relative w-9 h-5 rounded-full transition-all ${item.available === true || item.available === "Available"
-                                            ? "bg-black"
-                                            : "bg-gray-400"
-                                            } ${toggleLoading ? "opacity-50" : ""}`}
-                                    >
-                                        <span
-                                            className={`absolute top-0.5 left-0.5 w-4 h-4 bg-orange-500 rounded-full transition-transform ${item.available === true || item.available === "Available"
-                                                ? "translate-x-4"
-                                                : ""
-                                                }`}
-                                        />
-                                    </button> */}
-                                            <button
-                                                onClick={() => productToggle(item._id)}
-                                                disabled={toggleLoading}
-                                                className={`relative w-9 h-5 rounded-full transition-all ${item.available === true || item.available === "Available"
-                                                    ? "bg-black"
-                                                    : "bg-gray-400"} ${toggleLoading ? "opacity-50" : ""}`}
-                                            >
-                                                <span className={`absolute top-0.5 left-0.5 w-4 h-4 bg-orange-500 rounded-full transition-transform ${item.available === true || item.available === "Available"
-                                                    ? "translate-x-4"
-                                                    : ""}`} />
-                                            </button>
+                {/* Body Table Container */}
+                <div className="h-[550px] overflow-y-auto">
+                    <table className="w-full min-w-[700px] text-[14px] border-collapse">
+                        <tbody>
+                            {filteredProducts.length === 0 ? (
+                                <tr>
+                                    <td colSpan="7" className="py-10">
+                                        <div className="flex flex-col items-center justify-center animate-fadeIn">
+                                            <img
+                                                src="https://cdn-icons-png.flaticon.com/512/4076/4076432.png"
+                                                alt="No items"
+                                                className="w-28 h-28 opacity-80 mb-3"
+                                            />
+                                            <h2 className="text-lg font-semibold text-gray-700">No Items Found</h2>
+                                            <p className="text-gray-500 mt-1 text-sm">Try adding a new item or change your search.</p>
                                         </div>
                                     </td>
                                 </tr>
-                            ))
-                        )}
-                    </tbody>
-                </table>
+                            ) : (
+                                filteredProducts.map(item => (
+                                    <tr key={item._id} className="border-b hover:bg-gray-50">
+                                        <td className="py-4 px-5 w-[10%]">
+                                            <img src={item.image} alt="" className="w-14 h-14 object-cover rounded" />
+                                        </td>
+
+                                        <td className="py-4 px-5 font-medium text-black w-[20%]">{item.name}</td>
+
+                                        <td className="py-4 px-5 text-gray-600 w-[25%]">{item.description}</td>
+
+                                        <td className={`py-4 px-5 font-medium w-[15%] ${item.available ? "text-green-600" : "text-red-600"}`}>
+                                            {item.available ? "Available" : "Not Available"}
+                                        </td>
+
+                                        <td className="py-4 text-black px-5 w-[10%]">{item.preparationTime} mins</td>
+
+                                        <td className="py-4 text-black px-5 w-[10%]">Rs.{item.price}</td>
+
+                                        <td className="py-4 px-5 w-[10%]">
+                                            <div className="flex items-center gap-4">
+                                                <button className="hover:scale-110" onClick={() => openEditModal(item)}>
+                                                    <img src={edit} alt="edit" className="w-5 h-5" />
+                                                </button>
+                                                <button onClick={() => handleDelete(item._id)}>
+                                                    <img src={deleteIcon} alt="delete" className="w-5 h-5" />
+                                                </button>
+                                                <button
+                                                    onClick={() => productToggle(item._id)}
+                                                    disabled={toggleLoading}
+                                                    className={`relative w-9 h-5 rounded-full transition-all ${item.available === true || item.available === "Available"
+                                                        ? "bg-black"
+                                                        : "bg-gray-400"} ${toggleLoading ? "opacity-50" : ""}`}
+                                                >
+                                                    <span className={`absolute top-0.5 left-0.5 w-4 h-4 bg-orange-500 rounded-full transition-transform ${item.available === true || item.available === "Available"
+                                                        ? "translate-x-4"
+                                                        : ""}`} />
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ))
+                            )}
+                        </tbody>
+                    </table>
+                </div>
             </div>
             {/* Mobile / Tablet Card View */}
-            <div className="md:hidden grid gap-4">
+            <div className="md:hidden grid gap-4 h-[calc(100vh-250px)] overflow-y-auto">
                 {filteredProducts.length === 0 ? (
                     <div className="flex flex-col items-center justify-center py-10 animate-fadeIn">
                         <img

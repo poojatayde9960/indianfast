@@ -264,15 +264,15 @@ const Orders = () => {
 
     if (isLoading) {
         return (
-            <div className="p-4 sm:p-5 md:p-6 bg-[#F5F5F5] mt-20 min-h-[calc(100vh-80px)] md:h-[calc(100vh-80px)] overflow-y-auto">
+            <div className="p-4 sm:p-5 md:p-6  bg-[#F5F5F5] mt-20 min-h-[calc(100vh-80px)] md:h-[calc(100vh-80px)] overflow-y-auto">
 
                 {/* Tabs Skeleton */}
-                <div className="flex justify-between items-center w-full">
-                    <div className="flex gap-20">
+                <div className="flex justify-between  items-center w-full">
+                    <div className="flex gap-20 ">
                         {[1, 2, 3, 4, 5].map((i) => (
                             <div
                                 key={i}
-                                className="h-5 w-32 bg-slate-300 animate-pulse rounded"
+                                className="h-5 w-32  bg-slate-300 animate-pulse rounded"
                             ></div>
                         ))}
                     </div>
@@ -324,7 +324,7 @@ const Orders = () => {
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center w-full text-[17px] text-[#808080] relative gap-4 md:gap-0">
 
                 {/* LEFT SIDE - Tabs */}
-                <div className="flex gap-6 md:gap-10 items-center whitespace-nowrap overflow-x-auto lg:overflow-visible w-full md:w-auto pb-2 md:pb-0 scrollbar-hide">
+                <div className="flex gap-6 md:gap-0  -ml-5 items-center whitespace-nowrap overflow-x-auto lg:overflow-visible w-full md:w-auto pb-2 md:pb-0 scrollbar-hide">
                     {tabs.map(tab => (
                         <span
                             key={tab}

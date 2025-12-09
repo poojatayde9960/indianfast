@@ -68,7 +68,8 @@ const PaymentRequest = () => {
     };
     if (isLoading) {
         return (
-            <div className="p-4 sm:p-5 md:p-6 bg-[#F5F5F5] mt-20 min-h-[calc(100vh-80px)] overflow-y-auto animate-pulse">
+            // <div className="p-4 sm:p-5 md:p-6 bg-[#F5F5F5] mt-20 min-h-[calc(100vh-80px)] overflow-y-auto animate-pulse">
+            <div className="p-4 sm:p-5 md:p-6 bg-[#F5F5F5] mt-20 min-h-[calc(100vh-80px)] transition-all duration-500">
 
                 <div className="flex flex-col md:flex-row gap-4">
 
@@ -217,7 +218,6 @@ const PaymentRequest = () => {
                 </div>
             )}
             <div className="p-4 sm:p-5 md:p-6 bg-[#F5F5F5] mt-20 min-h-[calc(100vh-80px)] md:h-[calc(100vh-80px)] overflow-y-auto transition-all duration-500">
-                {/* <div className="p-4 sm:p-5 md:p-6 mt-20  bg-[#F5F5F5] min-h-[calc(100vh-80px)] overflow-y-auto"> */}
 
                 <div className="flex flex-col md:flex-row gap-4 items-stretch">
 
@@ -263,40 +263,42 @@ const PaymentRequest = () => {
                 {/* TABLE */}
                 <div className="mt-10 bg-white shadow rounded-xl overflow-hidden">
 
-                    <div className="border border-gray-300 rounded-xl overflow-x-auto p-4 md:p-6" style={{ height: "420px" }}>
-                        <table className="w-full min-w-[700px] text-left">
-                            <thead className="bg-gray-100 dm-sans text-gray-700 sticky dm-sans top-0 z-10">
-                                <tr>
-                                    <th className="p-3">Account Holder</th>
-                                    <th className="p-3">Amount</th>
-                                    <th className="p-3">UPI / Account</th>
-                                    <th className="p-3">IFSC</th>
-                                    <th className="p-3">Remark</th>
-                                    <th className="p-3">Date & Time</th>
-                                    <th className="p-3">Status</th>
-                                </tr>
-                            </thead>
-
-                            <tbody>
-                                {data?.data?.map((req, index) => (
-                                    <tr key={index} className="border-t border-gray-100 text-gray-500">
-                                        <td className="p-3 dm-sans">{req.bankDetails.accountHolderName}</td>
-                                        <td className="p-3 dm-sans">₹{req.bankDetails.amount}</td>
-                                        <td className="p-3 dm-sans">{req.bankDetails.bankAccountOrUpiId}</td>
-                                        <td className="p-3 dm-sans">{req.bankDetails.ifscCode}</td>
-                                        <td className="p-3 dm-sans">{req.bankDetails.remark}</td>
-                                        <td className="p-3 dm-sans">{formatDate(req.createdAt)}</td>
-                                        <td className={`p-3 dm-sans font-semibold ${getStatusColor(req.bankDetails.statusofpayment)}`}>
-                                            {req.bankDetails.statusofpayment}
-                                        </td>
+                    <div className="border border-gray-300 rounded-xl p-4 md:p-6">
+                        <div className="overflow-auto" style={{ maxHeight: "420px" }}>
+                            <table className="w-full min-w-[700px] text-left border-collapse">
+                                <thead className="bg-gray-100 text-gray-700 font-dm-sans">
+                                    <tr>
+                                        <th className="p-3 bg-gray-100 sticky top-0 z-20">Account Holder</th>
+                                        <th className="p-3 bg-gray-100 sticky top-0 z-20">Amount</th>
+                                        <th className="p-3 bg-gray-100 sticky top-0 z-20">UPI / Account</th>
+                                        <th className="p-3 bg-gray-100 sticky top-0 z-20">IFSC</th>
+                                        <th className="p-3 bg-gray-100 sticky top-0 z-20">Remark</th>
+                                        <th className="p-3 bg-gray-100 sticky top-0 z-20">Date & Time</th>
+                                        <th className="p-3 bg-gray-100 sticky top-0 z-20">Status</th>
                                     </tr>
-                                ))}
-                            </tbody>
-                        </table>
+                                </thead>
 
+                                <tbody>
+                                    {data?.data?.map((req, index) => (
+                                        <tr key={index} className="border-t border-gray-100 text-gray-500">
+                                            <td className="p-3 dm-sans">{req.bankDetails.accountHolderName}</td>
+                                            <td className="p-3 dm-sans">₹{req.bankDetails.amount}</td>
+                                            <td className="p-3 dm-sans">{req.bankDetails.bankAccountOrUpiId}</td>
+                                            <td className="p-3 dm-sans">{req.bankDetails.ifscCode}</td>
+                                            <td className="p-3 dm-sans">{req.bankDetails.remark}</td>
+                                            <td className="p-3 dm-sans">{formatDate(req.createdAt)}</td>
+                                            <td className={`p-3 dm-sans font-semibold ${getStatusColor(req.bankDetails.statusofpayment)}`}>
+                                                {req.bankDetails.statusofpayment}
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+
+                        </div>
                     </div>
                 </div>
-            </div >
+            </div>
         </>
     );
 };

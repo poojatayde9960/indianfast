@@ -84,7 +84,7 @@ const Dashboard = () => {
     const [elapsedSeconds, setElapsedSeconds] = useState(0);
 
     useEffect(() => {
-        if (!isActive) return; // जर ऑफलाइन असेल तर टाइमर सुरू होणार नाही
+        if (!isActive) return; //
 
         const interval = setInterval(() => {
             setElapsedSeconds(prev => {

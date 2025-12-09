@@ -56,11 +56,10 @@ const AttendanceTimer = () => {
 
     return (
         // <div className="p-4 md:p-8 bg-[#F3F4F6] min-h-screen pt-28 flex justify-center items-start">
-        <div className="p-4 sm:p-5 md:p-6 bg-[#F5F5F5] mt-20 min-h-[calc(100vh-80px)] md:h-[calc(100vh-80px)] overflow-y-auto transition-all duration-500">
-            <div className="w-full max-w-5xl grid grid-cols-1 ml-16 md:grid-cols-2 mt-20 gap-8 items-stretch">
+        <div className="p-4 sm:p-5 md:p-6 bg-[#F5F5F5] mt-20 min-h-[calc(100vh-80px)] md:h-[calc(100vh-80px)] overflow-y-auto md:overflow-hidden transition-all duration-500">
+            <div className="w-full max-w-5xl grid grid-cols-1  md:grid-cols-2 mt-20 gap-8 items-stretch">
 
-                {/* LEFT: Calendar (Clean White) */}
-                <div className="bg-white rounded-[2rem]  p-8 shadow-xl flex flex-col justify-between h-full min-h-[450px]">
+                <div className="bg-white rounded-[2rem]  p-8  shadow-xl flex flex-col justify-between h-full min-h-[450px]">
                     {/* Header */}
                     <div className="flex items-center justify-between mb-8">
                         <button onClick={handlePrevMonth} className="h-10 w-10 flex items-center justify-center rounded-full border border-gray-100 hover:bg-gray-50 text-gray-600 transition-colors">
@@ -116,7 +115,7 @@ const AttendanceTimer = () => {
                 </div>
 
                 {/* RIGHT: Stats (Dark Premium) */}
-                <div className="bg-[#1C1C1E] rounded-[2rem] p-10 shadow-2xl flex flex-col justify-center items-center text-center relative overflow-hidden min-h-[450px] text-white">
+                <div className="bg-[#1C1C1E] rounded-[2rem] p-10  shadow-2xl flex flex-col justify-center items-center text-center relative overflow-hidden min-h-[450px] text-white">
 
                     {/* Content */}
                     <div className="relative z-10 w-full flex flex-col items-center">

@@ -61,8 +61,7 @@ const AddCategories = ({ searchTerm }) => {
                         </thead>
                     </table>
 
-                    {/* Scrollable Body Skeleton */}
-                    <div className="h-[550px] overflow-y-auto scrollbar-hide">
+                    <div className="h-[550px] scrollbar-hide">
                         <table className="w-full border-collapse">
                             <tbody>
                                 {Array.from({ length: 8 }).map((_, i) => (
@@ -149,11 +148,11 @@ const AddCategories = ({ searchTerm }) => {
         <>
             {/* <pre className="text-black">{JSON.stringify(data, null, 2)}</pre> */}
             <div>
-                <h2 className="text-lg font-semibold text-gray-800">All Categories</h2>
-                <div className="bg-white rounded-2xl mt-8 shadow-md p-6 w-full mb-6">
-                    <div className="w-full">
+                <h2 className="text-lg font-semibold  text-gray-800">All Categories</h2>
+                <div className="bg-white rounded-2xl mt-8 shadow-md  p-6 w-full mb-6">
+                    <div className="w-full h-[90%]">
 
-                        <div className="overflow-x-auto hidden md:block">
+                        <div className="overflow-x-auto  hidden md:block">
                             <table className="w-full border-collapse text-left text-gray-800 min-w-[400px]">
                                 <thead className="bg-gray-100 text-[100%] font-DM Sans">
                                     <tr className="h-14 dm-sans font-bold">
@@ -165,7 +164,8 @@ const AddCategories = ({ searchTerm }) => {
                                 </thead>
                             </table>
 
-                            <div className="h-[550px] overflow-y-auto scrollbar-hide">
+                            <div className="h-[350px]  overflow-y-auto scrollbar-hide">
+
                                 <table className="w-full border-collapse text-left text-gray-800 min-w-[400px]">
                                     <tbody className="text-sm">
 
