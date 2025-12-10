@@ -256,9 +256,9 @@ const AddItem = ({ searchTerm }) => {
                             <th className="text-left px-5 w-[10%]">Image</th>
                             <th className="text-left px-5 w-[20%]">Item Name</th>
                             <th className="text-left px-5 w-[25%]">Description</th>
-                            <th className="text-left px-5 w-[15%]">Availability</th>
-                            <th className="text-left px-5 w-[10%]">Prep Time</th>
-                            <th className="text-left px-5 w-[10%]">Price</th>
+                            <th className="text-left   w-[15%]">Availability</th>
+                            <th className="text-left px- w-[10%]">Prep Time</th>
+                            <th className="text-left  w-[10%]">Price</th>
                             <th className="text-left px-5 w-[10%]"></th>
                         </tr>
                     </thead>
@@ -304,15 +304,15 @@ const AddItem = ({ searchTerm }) => {
                                         <td className="py-4 px-5 w-[10%]">
                                             <div className="flex items-center gap-4">
                                                 <button className="hover:scale-110" onClick={() => openEditModal(item)}>
-                                                    <img src={edit} alt="edit" className="w-5 h-5" />
+                                                    <img src={edit} alt="edit" className="w-8 h-5" />
                                                 </button>
                                                 <button onClick={() => handleDelete(item._id)}>
-                                                    <img src={deleteIcon} alt="delete" className="w-5 h-5" />
+                                                    <img src={deleteIcon} alt="delete" className="w-8 h-5" />
                                                 </button>
                                                 <button
                                                     onClick={() => productToggle(item._id)}
                                                     disabled={toggleLoading}
-                                                    className={`relative w-9 h-5 rounded-full transition-all ${item.available === true || item.available === "Available"
+                                                    className={`relative w-16 h-5 rounded-full transition-all ${item.available === true || item.available === "Available"
                                                         ? "bg-black"
                                                         : "bg-gray-400"} ${toggleLoading ? "opacity-50" : ""}`}
                                                 >

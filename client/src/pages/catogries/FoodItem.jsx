@@ -16,12 +16,14 @@ const FoodItem = () => {
     const [AddProduct] = useAddProductMutation()
     // const [categoriesAdd] = useCategoriesAddMutation();
     const [categoriesAdd, { isLoading, isSuccess, isError }] = useCategoriesAddMutation();
+    const [previewImage, setPreviewImage] = useState(null);
 
     const navigate = useNavigate();
 
     const [showCategories, setShowCategories] = useState(false);
     const [showAddSection, setShowAddSection] = useState(false);
-
+    const [categoryPreview, setCategoryPreview] = useState(null);
+    const [itemPreview, setItemPreview] = useState(null);
     const { searchTerm } = useOutletContext();
     const [selectedFoodCategory, setSelectedFoodCategory] = useState("");
 
@@ -41,6 +43,28 @@ const FoodItem = () => {
         },
     });
 
+    // const onSubmitCategory = async (data) => {
+    //     const formData = new FormData();
+    //     formData.append("name", data.categoryName);
+    //     formData.append("shopId", shopId);
+
+    //     if (data.categoryImage?.[0]) {
+    //         formData.append("image", data.categoryImage[0]);
+    //     }
+
+    //     try {
+    //         await categoriesAdd(formData).unwrap();
+
+    //         reset();
+    //         setSelectedFoodCategory("");
+    //         setShowModal(false);
+    //         setShowCategories(true);
+    //         setActiveCard("card1");
+    //         toast.success("Category added successfully!");
+    //     } catch (err) {
+    //         console.log("Error:", err);
+    //     }
+    // };
     const onSubmitCategory = async (data) => {
         const formData = new FormData();
         formData.append("name", data.categoryName);
@@ -53,17 +77,21 @@ const FoodItem = () => {
         try {
             await categoriesAdd(formData).unwrap();
 
+            toast.success("Category added successfully!");
             reset();
-            setSelectedFoodCategory("");
+            setCategoryPreview(null);
+
+            const fileInput = document.querySelector('input[type="file"][name="categoryImage"]');
+            if (fileInput) fileInput.value = "";
+
             setShowModal(false);
             setShowCategories(true);
             setActiveCard("card1");
-            toast.success("Category added successfully!");
         } catch (err) {
             console.log("Error:", err);
+            toast.error("Failed to add category");
         }
     };
-
 
     // ========== React Hook Form for Items ==========
     const {
@@ -118,7 +146,18 @@ const FoodItem = () => {
             console.log("Error while adding item:", error);
         }
     };
-
+    const handleFileChange = (e, setPreview) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setPreview(reader.result);
+            };
+            reader.readAsDataURL(file);
+        } else {
+            setPreview(null);
+        }
+    };
     return <>
 
         {/* <pre className="text-black">{JSON.stringify(data, null, 2)}</pre> */}
@@ -224,22 +263,55 @@ const FoodItem = () => {
                             <p className="text-red-500 text-sm mb-2">{errors.categoryName.message}</p>
                         )}
 
-                        <label className="w-full border border-dashed border-[#B4B4B4CC] rounded-md flex items-center justify-center px-4 py-[14px] text-[15px] text-[#5E5E5E] cursor-pointer">
-                            <Icon icon="mdi:upload" className="text-[#B4B4B4CC] w-6 h-6 mr-2" />
-                            <span>Upload Image of food</span>
+                        <div className="relative">
+                            <label className="w-full border border-dashed border-[#B4B4B4CC] rounded-md flex flex-col items-center justify-center px-4 py-[40px] text-[15px] text-[#5E5E5E] cursor-pointer">
+                                {categoryPreview ? (
+                                    <img src={categoryPreview} alt="Category preview" className="w-full h-44 object-cover rounded-md" />
+                                ) : (
+                                    <>
+                                        <Icon icon="mdi:upload" className="text-[#B4B4B4CC] w-6 h-6 mb-2" />
+                                        <span>Upload Image of food</span>
+                                    </>
+                                )}
 
-                            <input
-                                type="file"
-                                accept="image/*"
-                                {...register("categoryImage")}
-                                className="hidden"
-                            />
-                        </label>
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    {...register("categoryImage")}
+                                    onChange={(e) => {
+                                        register("categoryImage").onChange(e);
+                                        handleFileChange(e, setCategoryPreview);
+                                    }}
+                                    className="hidden"
+                                />
+                            </label>
+
+                            {categoryPreview && (
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        setCategoryPreview(null);
+                                        document.querySelector('input[name="categoryImage"]').value = null;
+                                    }}
+                                    className="absolute top-2 right-2  text-white rounded-full w-6 h-6 flex items-center justify-center text-xs"
+                                >
+
+                                </button>
+                            )}
+                        </div>
 
                         <div className="flex justify-center gap-5 mt-6">
                             <button
                                 type="button"
-                                onClick={() => setShowModal(false)}
+                                onClick={() => {
+                                    setShowModal(false);
+                                    setCategoryPreview(null);
+                                    reset();
+
+
+                                    const fileInput = document.querySelector('input[type="file"]');
+                                    if (fileInput) fileInput.value = "";
+                                }}
                                 className="w-full py-3 border border-[#FF6F00] text-[#FF6F00] rounded-md"
                             >
                                 Cancel

@@ -320,10 +320,15 @@ const AddCategories = ({ searchTerm }) => {
                             </label>
 
                             {editImageFile && (
-                                <p className="text-sm text-green-600 text-center mb-4">
-                                    Selected: {editImageFile.name}
-                                </p>
+                                <div className="mb-4 flex justify-center">
+                                    <img
+                                        src={URL.createObjectURL(editImageFile)}
+                                        alt="Preview"
+                                        className="w-28 h-28 object-cover rounded-lg border"
+                                    />
+                                </div>
                             )}
+
 
                             {/* Buttons */}
                             <div className="flex gap-4">
