@@ -193,8 +193,8 @@ const NewOrderRequests = () => {
                 </div>
 
                 {/* RIGHT SIDE – Recent Transactions */}
-                <div className="bg-white rounded-[20px] mt-4 lg:-mt-[40%] w-full lg:w-[85%] lg:ml-11 shadow-[0_4px_20px_rgba(0,0,0,0.08)] p-4 sm:p-5 
-    flex flex-col h-full"style={{ height: "500px" }} >
+                <div className="bg-white rounded-[20px] mt-4 lg:-mt-[50%] w-full lg:w-[85%] lg:ml-11 shadow-[0_4px_20px_rgba(0,0,0,0.08)] p-4 sm:p-5 
+    flex flex-col h-full"style={{ height: "600px" }} >
 
                     <h3 className="text-gray-700 font-semibold mb-5 sm:mb-8 text-lg sm:text-xl">
                         Recent Transactions
