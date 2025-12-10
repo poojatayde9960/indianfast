@@ -68,9 +68,16 @@ const Transactions = () => {
 
 
     const lossTransactions = filteredTransactions.filter(
-        (tx) => tx.status?.toLowerCase() === "rejected"
+        (tx) =>
+            tx.status?.toLowerCase() === "rejected" ||
+            tx.status?.toLowerCase() === "rejectedbydeliveryboy"
     );
-    const lossTotal = lossTransactions.reduce((sum, tx) => sum + tx.vendorAmount, 0);
+
+    // const lossTotal = lossTransactions.reduce((sum, tx) => sum + tx.vendorAmount, 0);
+    const lossTotal = lossTransactions.reduce(
+        (sum, tx) => sum + Math.abs(tx.vendorAmount),
+        0
+    );
 
     const getAmountColor = () => {
         if (activeTab === "Profit") return "#18780A";
@@ -128,7 +135,9 @@ const Transactions = () => {
                 return "#FF8C00";
             case "rejected":
             case "cancelled":
+            case "rejectedbydeliveryboy":
                 return "#E60023";
+
             case "placeorder":
             case "pending":
                 return "#777";
@@ -412,7 +421,7 @@ const Transactions = () => {
                                             color:
                                                 activeTab === "Loss"
                                                     ? "#E60023"
-                                                    : tx.status?.toLowerCase() === "rejected" || tx.status?.toLowerCase() === "cancelled"
+                                                    : tx.status?.toLowerCase() === "rejected" || tx.status?.toLowerCase() === "cancelled" || tx.status?.toLowerCase() === "rejectedbydeliveryboy"
                                                         ? "#E60023"
                                                         : tx.vendorAmount > 0
                                                             ? "#18780A"
@@ -421,7 +430,7 @@ const Transactions = () => {
                                     >
                                         {activeTab === "Loss"
                                             ? `-${Math.abs(tx.vendorAmount)}`
-                                            : tx.status?.toLowerCase() === "rejected" || tx.status?.toLowerCase() === "cancelled"
+                                            : tx.status?.toLowerCase() === "rejected" || tx.status?.toLowerCase() === "cancelled" || tx.status?.toLowerCase() === "rejectedbydeliveryboy"
                                                 ? `-${Math.abs(tx.vendorAmount)}`
                                                 : tx.vendorAmount > 0
                                                     ? `+${tx.vendorAmount}`
