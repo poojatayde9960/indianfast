@@ -209,7 +209,7 @@ const AddCategories = ({ searchTerm }) => {
                                                         )}
                                                     </td>
 
-                                                    <td className="py-1 px-6 text-right flex justify-end gap-4">
+                                                    <td className="py-1 px-6 text-right mt-3 flex justify-end gap-4">
                                                         <button onClick={() => handleEdit(cat)}>
                                                             <img src={edit} alt="Edit" className="w-5 h-5" />
                                                         </button>
@@ -331,7 +331,7 @@ const AddCategories = ({ searchTerm }) => {
 
 
                             {/* Buttons */}
-                            <div className="flex gap-4">
+                            <div className="flex gap-4 ">
                                 <button
                                     type="button"
                                     onClick={() => {

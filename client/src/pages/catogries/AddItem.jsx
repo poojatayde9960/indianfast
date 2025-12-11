@@ -229,12 +229,12 @@ const AddItem = ({ searchTerm }) => {
         {/* <pre className="text-black">{JSON.stringify(data, null, 2)}</pre> */}
         {/* Category Buttons */}
         {!searchTerm && (
-            <div className="flex flex-wrap gap-3 mb-5">
+            <div className="flex gap-3 mb-5 overflow-x-auto whitespace-nowrap px-2">
                 {categoriesData?.map(cat => (
                     <button
                         key={cat._id}
                         onClick={() => setActiveCategory(cat.category_name)}
-                        className={`px-5 py-2 rounded-[6px] transition-all ${activeCategory === cat.category_name
+                        className={`flex-shrink-0 px-5 py-2 rounded-[6px] transition-all ${activeCategory === cat.category_name
                             ? "bg-[#FF9F03] text-white"
                             : "bg-[#D9D9D9]/60 text-[#00000099]"
                             }`}
@@ -251,15 +251,15 @@ const AddItem = ({ searchTerm }) => {
             <div className="overflow-x-auto hidden md:block">
                 {/* Header Table */}
                 <table className="w-full min-w-[700px] text-[14px] border-collapse">
-                    <thead className="bg-[#F5F5F5] text-[#000000] h-14">
+                    <thead className="bg-[#F5F5F5] text-left  text-[#000000] h-14">
                         <tr>
-                            <th className="text-left px-5 w-[10%]">Image</th>
-                            <th className="text-left px-5 w-[20%]">Item Name</th>
-                            <th className="text-left px-5 w-[25%]">Description</th>
-                            <th className="text-left   w-[15%]">Availability</th>
-                            <th className="text-left px- w-[10%]">Prep Time</th>
-                            <th className="text-left  w-[10%]">Price</th>
-                            <th className="text-left px-5 w-[10%]"></th>
+                            <th className="pl-4">Image</th>
+                            <th className="pl-10">Item Name</th>
+                            <th className="pl-14">Description</th>
+                            <th className=" pl-20">Availability</th>
+                            <th className="pr-4">Prep Time</th>
+                            <th className="pr-10">Price</th>
+                            <th className="pr-20"></th>
                         </tr>
                     </thead>
                 </table>
@@ -293,7 +293,7 @@ const AddItem = ({ searchTerm }) => {
 
                                         <td className="py-4 px-5 text-gray-600 w-[25%]">{item.description}</td>
 
-                                        <td className={`py-4 px-5 font-medium w-[15%] ${item.available ? "text-green-600" : "text-red-600"}`}>
+                                        <td className={`py-4 px-5  font-medium w-[15%] ${item.available ? "text-green-600" : "text-red-600"}`}>
                                             {item.available ? "Available" : "Not Available"}
                                         </td>
 
@@ -343,7 +343,7 @@ const AddItem = ({ searchTerm }) => {
                     </div>
                 ) : (
                     filteredProducts.map(item => (
-                        <div key={item._id} className="border rounded-xl p-4 shadow-sm flex gap-4">
+                        <div key={item._id} className="border rounded-xl  p-4 shadow-sm flex gap-4">
                             <img src={item.image} alt="img" className="w-20 h-20 object-cover rounded-lg" />
                             <div className="flex flex-col flex-1">
                                 <h3 className="font-semibold text-black">{item.name}</h3>
