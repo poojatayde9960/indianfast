@@ -307,19 +307,37 @@ const AddCategories = ({ searchTerm }) => {
 
                             {/* Upload New Image */}
                             <label className="block mb-6 cursor-pointer">
-                                <div className="border-2 border-dashed border-[#B4B4B4CC] rounded-lg py-8 text-center hover:bg-gray-50 transition">
-                                    <Icon icon="mdi:upload" className="mx-auto text-[#B4B4B4CC] w-10 h-10 mb-2" />
-                                    <p className="text-sm text-[#5E5E5E]">Upload new image (optional)</p>
+                                <div className="relative border-2 border-dashed border-[#B4B4B4CC] rounded-lg h-44 flex items-center justify-center overflow-hidden hover:bg-gray-50 transition">
+
+                                    {editImageFile ? (
+                                        <img
+                                            src={URL.createObjectURL(editImageFile)}
+                                            alt="Preview"
+                                            className="absolute inset-0 w-full h-full object-cover"
+                                        />
+                                    ) : (
+                                        <div className="flex flex-col items-center justify-center text-center">
+                                            <Icon icon="mdi:upload" className="text-[#B4B4B4CC] w-10 h-10 mb-2" />
+                                            <p className="text-sm text-[#5E5E5E]">
+                                                Upload new image (optional)
+                                            </p>
+                                        </div>
+                                    )}
+
                                 </div>
+
                                 <input
                                     type="file"
                                     accept="image/*"
                                     className="hidden"
-                                    onChange={(e) => e.target.files[0] && setEditImageFile(e.target.files[0])}
+                                    onChange={(e) =>
+                                        e.target.files[0] && setEditImageFile(e.target.files[0])
+                                    }
                                 />
                             </label>
 
-                            {editImageFile && (
+
+                            {/* {editImageFile && (
                                 <div className="mb-4 flex justify-center">
                                     <img
                                         src={URL.createObjectURL(editImageFile)}
@@ -327,7 +345,7 @@ const AddCategories = ({ searchTerm }) => {
                                         className="w-28 h-28 object-cover rounded-lg border"
                                     />
                                 </div>
-                            )}
+                            )} */}
 
 
                             {/* Buttons */}
