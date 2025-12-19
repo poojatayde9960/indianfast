@@ -20,27 +20,29 @@ const Transactions = () => {
     const [showFilter, setShowFilter] = useState(false);
     const [searchTerm, setSearchTerm] = useState("");
     useEffect(() => {
-        revenueShop({
-            shopId,
-            startDate,
-            endDate
-        })
+        revenueShop({ shopId })
             .unwrap()
-            .then((res) => {
-                setRevenueData(res);
-            })
+            .then((res) => setRevenueData(res))
             .catch((err) => console.log(err));
-    }, [shopId, startDate, endDate]);
+    }, [shopId]);
+
+
 
     const handleFilter = async () => {
-        const res = await revenueShop({
-            shopId,
-            startDate,
-            endDate
-        });
+        try {
+            const res = await revenueShop({
+                shopId,
+                startDate,
+                endDate,
+            }).unwrap();
 
-        setRevenueData(res.data);
+            setRevenueData(res);
+            setShowFilter(false); // filter close optional
+        } catch (err) {
+            console.log(err);
+        }
     };
+
     const filteredTransactions =
         revenueData?.orders?.map((order) => ({
             customerName:
@@ -224,10 +226,8 @@ const Transactions = () => {
                                 ? `${lossTotal}`
                                 : activeTab === "Profit"
                                     ? `${profitTotal} `
-                                    : `${data?.totalRevenue || 0}`
+                                    : `${revenueData?.totalRevenue || 0}`
                         }
-
-
                     </p>
                 </div>
 

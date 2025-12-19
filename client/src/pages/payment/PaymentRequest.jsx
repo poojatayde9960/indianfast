@@ -278,7 +278,7 @@ const PaymentRequest = () => {
                                     </tr>
                                 </thead>
 
-                                <tbody>
+                                {/* <tbody>
                                     {data?.data?.map((req, index) => (
                                         <tr key={index} className="border-t border-gray-100 text-gray-500">
                                             <td className="p-3 dm-sans">{req.bankDetails.accountHolderName}</td>
@@ -292,7 +292,42 @@ const PaymentRequest = () => {
                                             </td>
                                         </tr>
                                     ))}
+                                </tbody> */}
+                                <tbody>
+                                    {data?.data?.length > 0 ? (
+                                        data.data.map((req, index) => (
+                                            <tr key={index} className="border-t border-gray-100 text-gray-500">
+                                                <td className="p-3 dm-sans">
+                                                    {req.bankDetails.accountHolderName}
+                                                </td>
+                                                <td className="p-3 dm-sans">₹{req.bankDetails.amount}</td>
+                                                <td className="p-3 dm-sans">
+                                                    {req.bankDetails.bankAccountOrUpiId}
+                                                </td>
+                                                <td className="p-3 dm-sans">{req.bankDetails.ifscCode}</td>
+                                                <td className="p-3 dm-sans">{req.bankDetails.remark}</td>
+                                                <td className="p-3 dm-sans">{formatDate(req.createdAt)}</td>
+                                                <td
+                                                    className={`p-3 dm-sans font-semibold ${getStatusColor(
+                                                        req.bankDetails.statusofpayment
+                                                    )}`}
+                                                >
+                                                    {req.bankDetails.statusofpayment}
+                                                </td>
+                                            </tr>
+                                        ))
+                                    ) : (
+                                        <tr>
+                                            <td
+                                                colSpan={7}
+                                                className="text-center py-10 text-gray-400 dm-sans"
+                                            >
+                                                No payment requests found
+                                            </td>
+                                        </tr>
+                                    )}
                                 </tbody>
+
                             </table>
 
                         </div>
