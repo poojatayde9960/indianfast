@@ -396,18 +396,21 @@ const Orders = () => {
                                 return (
                                     <tr key={index} className="border-t h-20 font-bold text-[#000000] border-gray-200 hover:bg-gray-50 transition">
                                         <td className="py-3 px-6">{customer}</td>
-                                        <td
-                                            className={`py-3 px-6 flex items-center gap-6 ${activeTab.startsWith("Ongoing") ? "mt-8" : ""
-                                                }`}
-                                        >
-                                            {totalItems}
-                                            <button
-                                                onClick={() => setSelectedOrder(order)}
-                                                className="text-[#0046AF] underline text-[14px] hover:text-blue-800"
+                                        <td className="py-3 px-6">
+                                            <div
+                                                className={`flex items-center gap-6 ${!activeTab.startsWith("All") ? "mt-3" : ""
+                                                    }`}
                                             >
-                                                View
-                                            </button>
+                                                {totalItems}
+                                                <button
+                                                    onClick={() => setSelectedOrder(order)}
+                                                    className="text-[#0046AF] underline text-[14px] hover:text-blue-800"
+                                                >
+                                                    View
+                                                </button>
+                                            </div>
                                         </td>
+
 
                                         <td className="py-3 px-6">{contact}</td>
                                         <td className="py-3 px-6 whitespace-normal break-words max-w-[200px] leading-snug">{address}</td>
