@@ -398,7 +398,7 @@ const Orders = () => {
                                         <td className="py-3 px-6">{customer}</td>
                                         <td className="py-3 px-6">
                                             <div
-                                                className={`flex items-center gap-6 ${!activeTab.startsWith("All") ? "mt-3" : ""
+                                                className={`flex items-center gap-6 ${!activeTab.startsWith("All") ? " items-center" : ""
                                                     }`}
                                             >
                                                 {totalItems}
