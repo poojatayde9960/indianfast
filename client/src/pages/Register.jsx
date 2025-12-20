@@ -4,7 +4,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import clsx from "clsx";
 import { useNavigate } from "react-router-dom";
-import { useVendorRegisterMutation } from "../redux/apis/vendorApi";
+import { useVendorRegisterMutation, useVerifyPaymentMutation } from "../redux/apis/vendorApi";
 import background from "/background.jpg";
 import indianFast from "/indianFast.png";
 import food1 from "/food1.png";
@@ -62,6 +62,8 @@ const Register = () => {
     const [showPaymentModal, setShowPaymentModal] = useState(false);
     const [formData, setFormData] = useState(null);
     const { data: RegistretionFessData } = useRegistretionFessQuery();
+    const [apiResponse, setApiResponse] = useState(null);
+    const [verifyPayment] = useVerifyPaymentMutation();
     const handleGetLocation = () => {
         if (!navigator.geolocation) {
             setMessage("❌ Geolocation is not supported by your browser.");
@@ -99,10 +101,17 @@ const Register = () => {
         formState: { errors },
         reset,
         setValue,
+        watch
     } = useForm({
         resolver: yupResolver(schema),
         mode: "onBlur",
     });
+    // 🔹 Watch file inputs
+    const hotelImageFile = watch("hotelImage");
+    const gstImageFile = watch("enterGSTImage");
+    const shopLicenseImageFile = watch("shopActLicenseImage");
+    const foodLicenseImageFile = watch("foodDrugLicenseImage");
+    const clerkLicenseImageFile = watch("clerkLicenseImage");
 
     const fetchAddress = async (lat, lon) => {
         try {
@@ -136,36 +145,39 @@ const Register = () => {
 
     const handlePayment = () => {
         const fee = RegistretionFessData?.data?.vendorOnboardingFee || 0;
+
         const options = {
-            key: import.meta.env.VITE_RAZORPAY_KEY || "rzp_test_1DP5mmOlF5G5ag",
-            amount: fee * 100, //
+            key: import.meta.env.VITE_RAZORPAY_KEY,
+            amount: fee * 100,
             currency: "INR",
             name: "Indian Fast Food",
             description: "Vendor Registration Fee",
             image: indianFast,
+            order_id: apiResponse?.shop?.razorpayOrderId, // 
+
             handler: async function (response) {
                 try {
-                    const finalFormData = new FormData();
-                    for (const pair of formData.entries()) {
-                        finalFormData.append(pair[0], pair[1]);
-                    }
-                    finalFormData.append("paymentId", response.razorpay_payment_id);
+                    const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = response;
+                    console.log(response);
 
-                    const res = await vendorRegister(finalFormData).unwrap();
-                    console.log("Registration Success:", res);
-                    alert("Shop registered successfully! Pending approval.");
-                    reset();
-                    setShowPaymentModal(false);
+                    const res = await verifyPayment({
+                        razorpayOrderId: razorpay_order_id,
+                        razorpay_payment_id: razorpay_payment_id,
+                        razorpay_signature: razorpay_signature,
+                    }).unwrap();
+
+                    console.log("Payment Verified ✅", res);
+                    alert("Payment Verified Successfully!");
                     navigate("/login");
-                } catch (error) {
-                    console.error("Registration Failed:", error);
-                    alert("Registration failed. Try again.");
+                } catch (err) {
+                    console.error("Payment Verification Failed ❌", err);
+                    alert("Payment Verification Failed!");
                 }
             },
             prefill: {
-                name: formData?.get("ownerName"),
-                email: formData?.get("ownerEmail"),
-                contact: formData?.get("ownerNumber"),
+                name: apiResponse?.shop?.ownerName,
+                email: apiResponse?.shop?.ownerEmail,
+                contact: apiResponse?.shop?.ownerNumber,
             },
             theme: {
                 color: "#FE9611",
@@ -176,24 +188,32 @@ const Register = () => {
         rzp1.open();
     };
 
+
+
     const onSubmit = async (values) => {
         try {
-            const data = new FormData();
+            const formData = new FormData();
+
             Object.entries(values).forEach(([key, value]) => {
-                if (value instanceof FileList) data.append(key, value[0]);
-                else data.append(key, value);
+                if (value instanceof FileList) formData.append(key, value[0]);
+                else formData.append(key, value);
             });
 
-            // append location
-            data.append("latitude", location.latitude);
-            data.append("longitude", location.longitude);
+            formData.append("latitude", location.latitude);
+            formData.append("longitude", location.longitude);
 
-            setFormData(data);
+            const res = await vendorRegister(formData).unwrap();
+            console.log("RESPONSE 👉", res); //
+
+            setApiResponse(res);
             setShowPaymentModal(true);
-        } catch (error) {
-            console.error("Form preparation failed:", error);
+
+        } catch (err) {
+            console.error("Registration Failed 👉", err);
         }
     };
+
+
 
     const inputClass = (field) =>
         clsx(
@@ -204,7 +224,7 @@ const Register = () => {
             }
         );
 
-    return (
+    return <>
         <div
             className="fixed inset-0 flex items-center justify-center bg-cover bg-center overflow-hidden"
             style={{ backgroundImage: `url(${background})` }}
@@ -247,7 +267,6 @@ const Register = () => {
                 <h2 className="text-2xl font-semibold text-center mb-6">
                     Vendor Registration
                 </h2>
-
                 <div className="flex-1 overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-[#FE9611] scrollbar-track-transparent">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 pb-4">
                         {/* Owner Info */}
@@ -285,12 +304,28 @@ const Register = () => {
                             </label>
                             <label
                                 htmlFor="hotelImage"
-                                className="w-full border border-dashed border-[#B4B4B4CC] bg-[#FFFFFF] rounded-md flex items-center justify-center px-4 py-[14px] text-[15px] text-[#5E5E5E] cursor-pointer   transition"
+                                className={`w-full border border-dashed rounded-md flex items-center justify-center px-4 py-[14px] text-[15px] bg-white cursor-pointer transition
+    ${hotelImageFile?.length ? "border-green-500 text-green-600" : "border-[#B4B4B4CC] text-[#5E5E5E]"}
+  `}
                             >
-                                <Icon icon="mdi:upload" className="text-[#B4B4B4CC] w-6 h-6 mr-2" />
-                                <span className="text-[#B4B4B4CC]">Upload Hotel Image</span>
-                                <input id="hotelImage" type="file" {...register("hotelImage")} className="hidden" />
+                                <Icon
+                                    icon={hotelImageFile?.length ? "mdi:check-circle" : "mdi:upload"}
+                                    className="w-6 h-6 mr-2"
+                                />
+                                <span>
+                                    {hotelImageFile?.length
+                                        ? `Image selected: ${hotelImageFile[0].name}`
+                                        : "Upload Hotel Image"}
+                                </span>
+
+                                <input
+                                    id="hotelImage"
+                                    type="file"
+                                    {...register("hotelImage")}
+                                    className="hidden"
+                                />
                             </label>
+
                         </div>
 
 
@@ -310,70 +345,147 @@ const Register = () => {
 
                         {/* License Inputs */}
                         <div>
-                            <input {...register("enterGSTNumber")} placeholder="GST Number" className={inputClass("enterGSTNumber")} />
+                            <input
+                                {...register("enterGSTNumber")}
+                                placeholder="GST Number"
+                                className={inputClass("enterGSTNumber")}
+                            />
+
                             <label
                                 htmlFor="enterGSTImage"
-                                className="flex flex-col items-center justify-center w-full h-14 mt-2 border-2 border-dashed border-gray-400 rounded-md cursor-pointer bg-white text-gray-600 hover:bg-gray-100 transition"
+                                className={`flex flex-col items-center justify-center w-full h-14 mt-2 border-2 border-dashed rounded-md cursor-pointer bg-white transition
+      ${gstImageFile?.length
+                                        ? "border-green-500 text-green-600"
+                                        : "border-gray-400 text-gray-600 hover:bg-gray-100"}
+    `}
                             >
-                                <Icon icon="mdi:upload-outline" className="text-xl mb-[2px]" />
-                                <span className="text-sm">Upload GST Certificate</span>
-                                <input id="enterGSTImage" type="file" {...register("enterGSTImage")} className="hidden" />
+                                <Icon
+                                    icon={gstImageFile?.length ? "mdi:check-circle-outline" : "mdi:upload-outline"}
+                                    className="text-xl mb-[2px]"
+                                />
+
+                                <span className="text-sm">
+                                    {gstImageFile?.length
+                                        ? `File selected: ${gstImageFile[0].name}`
+                                        : "Upload GST Certificate"}
+                                </span>
+
+                                <input
+                                    id="enterGSTImage"
+                                    type="file"
+                                    {...register("enterGSTImage")}
+                                    className="hidden"
+                                />
                             </label>
                         </div>
 
+
                         <div>
-                            <input {...register("shopActLicenseNo")} placeholder="Shop License No" className={inputClass("shopActLicenseNo")} />
+                            <input
+                                {...register("shopActLicenseNo")}
+                                placeholder="Shop License No"
+                                className={inputClass("shopActLicenseNo")}
+                            />
+
                             <label
                                 htmlFor="shopActLicenseImage"
-                                className="flex flex-col items-center justify-center w-full h-14 mt-2 border-2 border-dashed border-gray-400 rounded-md cursor-pointer bg-white text-gray-600 hover:bg-gray-100 transition"
+                                className={`flex flex-col items-center justify-center w-full h-14 mt-2 border-2 border-dashed rounded-md cursor-pointer bg-white transition
+      ${shopLicenseImageFile?.length
+                                        ? "border-green-500 text-green-600"
+                                        : "border-gray-400 text-gray-600 hover:bg-gray-100"}
+    `}
                             >
-                                <Icon icon="mdi:upload-outline" className="text-xl mb-[2px]" />
-                                <span className="text-sm">Upload Shop License File</span>
-                                <input id="shopActLicenseImage" type="file" {...register("shopActLicenseImage")} className="hidden" />
+                                <Icon
+                                    icon={shopLicenseImageFile?.length ? "mdi:check-circle-outline" : "mdi:upload-outline"}
+                                    className="text-xl mb-[2px]"
+                                />
+
+                                <span className="text-sm">
+                                    {shopLicenseImageFile?.length
+                                        ? `File selected: ${shopLicenseImageFile[0].name}`
+                                        : "Upload Shop License File"}
+                                </span>
+
+                                <input
+                                    id="shopActLicenseImage"
+                                    type="file"
+                                    {...register("shopActLicenseImage")}
+                                    className="hidden"
+                                />
                             </label>
                         </div>
 
                         <div>
-                            <input {...register("foodDrugLicenseNo")} placeholder="Food License No" className={inputClass("foodDrugLicenseNo")} />
+                            <input
+                                {...register("foodDrugLicenseNo")}
+                                placeholder="Food License No"
+                                className={inputClass("foodDrugLicenseNo")}
+                            />
+
                             <label
                                 htmlFor="foodDrugLicenseImage"
-                                className="flex flex-col items-center justify-center w-full h-14 mt-2 border-2 border-dashed border-gray-400 rounded-md cursor-pointer bg-white text-gray-600 hover:bg-gray-100 transition"
+                                className={`flex flex-col items-center justify-center w-full h-14 mt-2 border-2 border-dashed rounded-md cursor-pointer bg-white transition
+      ${foodLicenseImageFile?.length
+                                        ? "border-green-500 text-green-600"
+                                        : "border-gray-400 text-gray-600 hover:bg-gray-100"}
+    `}
                             >
-                                <Icon icon="mdi:upload-outline" className="text-xl mb-[2px]" />
-                                <span className="text-sm">Upload Food License File</span>
-                                <input id="foodDrugLicenseImage" type="file" {...register("foodDrugLicenseImage")} className="hidden" />
+                                <Icon
+                                    icon={foodLicenseImageFile?.length ? "mdi:check-circle-outline" : "mdi:upload-outline"}
+                                    className="text-xl mb-[2px]"
+                                />
+
+                                <span className="text-sm">
+                                    {foodLicenseImageFile?.length
+                                        ? `File selected: ${foodLicenseImageFile[0].name}`
+                                        : "Upload Food License File"}
+                                </span>
+
+                                <input
+                                    id="foodDrugLicenseImage"
+                                    type="file"
+                                    {...register("foodDrugLicenseImage")}
+                                    className="hidden"
+                                />
                             </label>
                         </div>
-
                         <div>
-                            <input {...register("clerkLicenseNo")} placeholder="Clerk License No" className={inputClass("clerkLicenseNo")} />
+                            <input
+                                {...register("clerkLicenseNo")}
+                                placeholder="Clerk License No"
+                                className={inputClass("clerkLicenseNo")}
+                            />
+
                             <label
                                 htmlFor="clerkLicenseImage"
-                                className="flex flex-col items-center justify-center w-full h-14 mt-2 border-2 border-dashed border-gray-400 rounded-md cursor-pointer bg-white text-gray-600 hover:bg-gray-100 transition"
+                                className={`flex flex-col items-center justify-center w-full h-14 mt-2 border-2 border-dashed rounded-md cursor-pointer bg-white transition
+      ${clerkLicenseImageFile?.length
+                                        ? "border-green-500 text-green-600"
+                                        : "border-gray-400 text-gray-600 hover:bg-gray-100"}
+    `}
                             >
-                                <Icon icon="mdi:upload-outline" className="text-xl mb-[2px]" />
-                                <span className="text-sm">Upload Clerk License File</span>
-                                <input id="clerkLicenseImage" type="file" {...register("clerkLicenseImage")} className="hidden" />
+                                <Icon
+                                    icon={clerkLicenseImageFile?.length ? "mdi:check-circle-outline" : "mdi:upload-outline"}
+                                    className="text-xl mb-[2px]"
+                                />
+
+                                <span className="text-sm">
+                                    {clerkLicenseImageFile?.length
+                                        ? `File selected: ${clerkLicenseImageFile[0].name}`
+                                        : "Upload Clerk License File"}
+                                </span>
+
+                                <input
+                                    id="clerkLicenseImage"
+                                    type="file"
+                                    {...register("clerkLicenseImage")}
+                                    className="hidden"
+                                />
                             </label>
                         </div>
 
-                        {/* Location Info */}
-                        {/* <div className="col-span-2 grid grid-cols-2 gap-4">
-                            <input
-                                type="text"
-                                value={location.latitude || ""}
-                                readOnly
-                                placeholder="Latitude (auto)"
-                                className="border text-black rounded-md p-3 bg-gray-100"
-                            />
-                            <input
-                                type="text"
-                                value={location.longitude || ""}
-                                readOnly
-                                placeholder="Longitude (auto)"
-                                className="border text-black rounded-md p-3 bg-gray-100"
-                            />
-                        </div> */}
+
+
 
                         <div className="col-span-1 md:col-span-2">
                             <label className="block text-sm font-medium text-[#5E5E5E] mb-2">
@@ -436,35 +548,97 @@ const Register = () => {
 
             {/* Payment Modal */}
             {showPaymentModal && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm">
-                    <div className="bg-white text-black p-6 rounded-lg shadow-xl w-[90%] md:w-[400px]">
-                        <h3 className="text-xl font-bold mb-4 text-center">Registration Fee</h3>
-                        <p className="text-center mb-6 text-gray-700">
-                            To complete your registration, you need to pay a one-time fee of:
-                            <br />
-                            <span className="text-2xl font-bold text-[#FE9611]">
-                                ₹{RegistretionFessData?.data?.vendorOnboardingFee || 0}
-                            </span>
-                        </p>
-                        <div className="flex gap-4 justify-center">
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+                    <div className="bg-white text-black rounded-2xl w-[95%] md:w-[700px] max-h-[85vh] overflow-y-auto shadow-xl p-6 md:p-8 relative">
+                        <h3 className="text-3xl font-bold mb-6 text-center text-[#FE9611]">
+                            Registration Successful ✅
+                        </h3>
+
+                        {/* Vendor & Hotel Details */}
+                        <div className="space-y-6">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                {[
+                                    ["Vendor ID", apiResponse?.shop?._id],
+                                    ["Status", apiResponse?.message],
+                                    ["Owner Name", apiResponse?.shop?.ownerName],
+                                    ["Owner Email", apiResponse?.shop?.ownerEmail],
+                                    ["Owner Address", apiResponse?.shop?.ownerAddress],
+                                    ["Owner Number", apiResponse?.shop?.ownerNumber],
+                                    ["Hotel Name", apiResponse?.shop?.hotelName],
+                                    ["Hotel Email", apiResponse?.shop?.hotelEmail],
+                                    ["Hotel Address", apiResponse?.shop?.hotelAddress],
+                                    ["Hotel Area", apiResponse?.shop?.hotelArea],
+                                    ["Hotel Number", apiResponse?.shop?.hotelNumber],
+                                    ["Hotel Availability", apiResponse?.shop?.hotelAvable],
+                                    ["Hotel Type", apiResponse?.shop?.hotelType],
+                                    ["GST Number", apiResponse?.shop?.enterGSTNumber],
+                                    ["Shop License No", apiResponse?.shop?.shopActLicenseNo],
+                                    ["Food License No", apiResponse?.shop?.foodDrugLicenseNo],
+                                    ["Clerk License No", apiResponse?.shop?.clerkLicenseNo],
+                                    ["Latitude", apiResponse?.shop?.locations?.latitude],
+                                    ["Longitude", apiResponse?.shop?.locations?.longitude],
+                                    ["Amount", `₹${apiResponse?.shop?.amount}`],
+                                ].map(([label, value]) => (
+                                    <p key={label} className="text-gray-700 hover:text-gray-900 transition-colors">
+                                        <span className="font-semibold">{label}:</span> {value || "-"}
+                                    </p>
+                                ))}
+                            </div>
+
+                            {/* Images */}
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
+                                {[
+                                    ["Hotel Image", apiResponse?.shop?.hotelImage],
+                                    ["GST Certificate", apiResponse?.shop?.enterGSTImage],
+                                    ["Shop License", apiResponse?.shop?.shopActLicenseImage],
+                                    ["Food License", apiResponse?.shop?.foodDrugLicenseImage],
+                                    ["Clerk License", apiResponse?.shop?.clerkLicenseImage],
+                                ].map(([label, src]) =>
+                                    src ? (
+                                        <div key={label} className="flex flex-col items-center p-2 bg-gray-50 rounded-lg shadow-sm hover:shadow-md transition-shadow">
+                                            <p className="text-sm font-semibold mb-2 text-gray-600">{label}</p>
+                                            <img
+                                                src={src}
+                                                alt={label}
+                                                className="w-full h-28 object-cover rounded-lg border border-gray-200"
+                                            />
+                                        </div>
+                                    ) : null
+                                )}
+                            </div>
+                        </div>
+
+                        {/* Buttons */}
+                        <div className="flex justify-center gap-6 mt-6">
                             <button
                                 onClick={() => setShowPaymentModal(false)}
-                                className="px-4 py-2 rounded-md border border-gray-300 hover:bg-gray-100 transition"
+                                className="px-5 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 transition"
                             >
-                                Cancel
+                                Close
                             </button>
                             <button
                                 onClick={handlePayment}
-                                className="px-6 py-2 rounded-md bg-[#FE9611] text-white font-semibold hover:bg-[#e0850f] transition"
+                                className="px-6 py-2 bg-gradient-to-r from-[#FE9611] to-[#FF9F03] text-white rounded-lg shadow hover:opacity-90 transition"
                             >
-                                Yes, Pay & Register
+                                Pay Now
                             </button>
                         </div>
+
+                        {/* Optional: Close X button */}
+                        <button
+                            onClick={() => setShowPaymentModal(false)}
+                            className="absolute top-4 right-4 text-gray-500 hover:text-gray-800 transition text-xl font-bold"
+                        >
+                            &times;
+                        </button>
                     </div>
                 </div>
             )}
+
+
+
         </div>
-    );
+    </>
 };
 
 export default Register;

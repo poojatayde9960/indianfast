@@ -59,7 +59,16 @@ export const vendorApi = createApi({
                     method: "POST",
                     body: formData,
                 }),
-                transformResponse: (data) => data.result,
+                // transformResponse: (data) => data.result,
+                invalidatesTags: ["vendor"],
+            }),
+            verifyPayment: builder.mutation({
+                query: (formData) => ({
+                    url: "/verifyPayment",
+                    method: "POST",
+                    body: formData,
+                }),
+                // transformResponse: (data) => data.result,
                 invalidatesTags: ["vendor"],
             }),
             revenueShop: builder.mutation({
@@ -99,4 +108,4 @@ export const vendorApi = createApi({
     }
 })
 
-export const { useRevenueShopMutation, useVendorLoginMutation, useVerifyLoginOtpMutation, useVendorRegisterMutation, useGetProfileQuery, useVendorLogoutMutation } = vendorApi
+export const { useRevenueShopMutation, useVendorLoginMutation, useVerifyLoginOtpMutation, useVerifyPaymentMutation, useVendorRegisterMutation, useGetProfileQuery, useVendorLogoutMutation } = vendorApi
